@@ -1,0 +1,60 @@
+\begin{tikzpicture}
+
+	\matrix (mtr) [matrix of nodes,row sep=-\pgflinewidth, nodes={draw}]
+	{
+		0 & 1 & 1 & |[fill=color3!30]| 1 & |[fill=color3!30]| 0 & |[fill=color3!30]| 0 \\
+		0 & 0 & 1 & |[fill=color3!30]| 1 & |[fill=color3!30]| 1 & |[fill=color3!30]| 0 \\
+		0 & 0 & 0 & |[fill=color3!30]| 1 & |[fill=color3!30]| 1 & |[fill=color3!30]| 1 \\
+		0 & 0 & 0 & 1 & 1 & 0 \\
+		0 & 0 & 1 & 1 & 0 & 0 \\
+		0 & 1 & 1 & 0 & 0 & 0 \\
+	};
+	\node[below = 0em of mtr] (lm) {\scriptsize $I$};
+	\node[right = 0.2em of mtr] (str) {$*$};
+	
+	\matrix (K) [right=0.2em of str,matrix of nodes,row sep=-\pgflinewidth, nodes={draw, fill=color1!10}]
+	{
+		1 & 0 & 1 \\
+		0 & 1 & 0 \\
+		1 & 0 & 1 \\
+	};
+
+	\node[anchor=south east, inner sep=0.01em, color1] at (mtr-1-4.south east) (xx) {\scalebox{.5}{$\times 1$}};
+	\node[anchor=south east, inner sep=0.01em, color1] at (mtr-1-5.south east) (xx) {\scalebox{.5}{$\times 0$}};
+	\node[anchor=south east, inner sep=0.01em, color1] at (mtr-1-6.south east) (xx) {\scalebox{.5}{$\times 1$}};
+	\node[anchor=south east, inner sep=0.01em, color1] at (mtr-2-4.south east) (xx) {\scalebox{.5}{$\times 0$}};
+	\node[anchor=south east, inner sep=0.01em, color1] at (mtr-2-5.south east) (xx) {\scalebox{.5}{$\times 1$}};
+	\node[anchor=south east, inner sep=0.01em, color1] at (mtr-2-6.south east) (xx) {\scalebox{.5}{$\times 0$}};
+	\node[anchor=south east, inner sep=0.01em, color1] at (mtr-3-4.south east) (xx) {\scalebox{.5}{$\times 1$}};
+	\node[anchor=south east, inner sep=0.01em, color1] at (mtr-3-5.south east) (xx) {\scalebox{.5}{$\times 0$}};
+	\node[anchor=south east, inner sep=0.01em, color1] at (mtr-3-6.south east) (xx) {\scalebox{.5}{$\times 1$}};
+
+	\node[below = 0em of K] (lk) {\scriptsize $K$};
+	\node[right = 0.2em of K] (eq) {$=$};
+
+	\matrix (ret) [right=0.2em of eq,matrix of nodes,row sep=-\pgflinewidth, nodes={draw}]
+	{
+		1 & 4 & 3 & |[fill=color2!30]| 4 \\
+		1 & 2 & 4 & 3 \\
+		1 & 2 & 3 & 4 \\
+		1 & 3 & 3 & 1 \\
+	};
+
+	\node[below = 0em of ret] (lim) {\scriptsize $I * K$};
+
+	\draw[very thick, color3] (mtr-1-4.north west) rectangle (mtr-3-6.south east);
+	\draw[very thick, color1] (K-1-1.north west) rectangle (K-3-3.south east);
+	\draw[very thick, color2] (ret-1-4.north west) rectangle (ret-1-4.south east);
+
+	\draw[densely dotted, color1, thick] (mtr-1-4.north west) -- (K-1-1.north west);
+	\draw[densely dotted, color1, thick] (mtr-3-4.south west) -- (K-3-1.south west);
+	\draw[densely dotted, color1, thick] (mtr-1-6.north east) -- (K-1-3.north east);
+	\draw[densely dotted, color1, thick] (mtr-3-6.south east) -- (K-3-3.south east);
+	
+	\draw[densely dotted, color2, thick] (ret-1-4.north west) -- (K-1-1.north west);
+	\draw[densely dotted, color2, thick] (ret-1-4.south west) -- (K-3-1.south west);
+	\draw[densely dotted, color2, thick] (ret-1-4.north east) -- (K-1-3.north east);
+	\draw[densely dotted, color2, thick] (ret-1-4.south east) -- (K-3-3.south east);
+
+
+\end{tikzpicture}

@@ -1,0 +1,681 @@
+\documentclass{beamer}
+
+\title{Adversarial Attacks and Defenses for Image-Based Recommendation Systems using Deep Neural Networks}
+\subtitle{Master Thesis}
+\author{Philipp Normann}
+\institute{Department of Computer Science \\ University of Applied Sciences Wedel}
+\titlegraphic{\includegraphics[width=1.3cm]{images/fhw}\hspace{0.3cm}\includegraphics[width=1.3cm]{images/otto}
+}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc} 
+\usepackage{listings,lstautogobble}
+\usetheme{Berkeley}
+\setbeamertemplate{bibliography item}{}
+\usepackage{booktabs}           	 % Netteres Tabellenlayout
+\usepackage{multicol}               % Mehrspaltige Bereiche
+\usepackage{multirow}
+\usepackage{scalerel}
+%% Citation properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{csquotes}
+\usepackage[backend=biber, backref=true, style=apa]{biblatex}
+\bibliography{../literature.bib}
+%% Citation hyperref fix %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareFieldFormat{citehyperref}{%
+	\DeclareFieldAlias{bibhyperref}{noformat}% Avoid nested links
+	\bibhyperref{#1}}
+
+\DeclareFieldFormat{textcitehyperref}{%
+	\DeclareFieldAlias{bibhyperref}{noformat}% Avoid nested links
+	\bibhyperref{%
+		#1%
+		\ifbool{cbx:parens}
+		{\bibcloseparen\global\boolfalse{cbx:parens}}
+		{}}}
+
+\savebibmacro{cite}
+\savebibmacro{textcite}
+
+\renewbibmacro*{cite}{%
+	\printtext[citehyperref]{%
+		\restorebibmacro{cite}%
+		\usebibmacro{cite}}}
+
+\renewbibmacro*{textcite}{%
+	\ifboolexpr{
+		( not test {\iffieldundef{prenote}} and
+		test {\ifnumequal{\value{citecount}}{1}} )
+		or
+		( not test {\iffieldundef{postnote}} and
+		test {\ifnumequal{\value{citecount}}{\value{citetotal}}} )
+	}
+	{\DeclareFieldAlias{textcitehyperref}{noformat}}
+	{}%
+	\printtext[textcitehyperref]{%
+		\restorebibmacro{textcite}%
+		\usebibmacro{textcite}}}
+
+
+%% Tikz properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
+\usepackage{subfig}
+\usepackage{forest}
+\usepackage{tikzpeople}
+\usepackage{fontawesome}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\usepgfplotslibrary{groupplots} 
+\usetikzlibrary{calc,intersections,positioning,backgrounds,matrix,shapes}
+\definecolor{color0}{rgb}{0.917647058823529,0.917647058823529,0.949019607843137}
+\definecolor{color1}{rgb}{0.298039215686275,0.447058823529412,0.690196078431373}
+\definecolor{color2}{rgb}{0.333333333333333,0.658823529411765,0.407843137254902}
+\definecolor{color3}{rgb}{0.768627450980392,0.305882352941176,0.32156862745098}
+\definecolor{color4}{rgb}{0.505882352941176,0.447058823529412,0.698039215686274}
+\definecolor{color5}{rgb}{0.8,0.725490196078431,0.454901960784314}
+\definecolor{color6}{rgb}{0.392156862745098,0.709803921568627,0.803921568627451}
+
+\begin{document}
+	\frame{\titlepage}
+	\frame{\frametitle{Overview} \tableofcontents}
+	
+	\section{Motivation}
+	
+	\begin{frame}	
+		\frametitle{Motivation}
+		\begin{block}{Recommendation systems have reached widespread adoption}
+			Numerous companies, ranging from e-commerce marketplaces, to streaming services, as well as social networks and news aggregators, successfully deploy such systems.
+		\end{block}
+		\begin{alertblock}{Malicious actors try to exploit these systems to their advantage}
+			Depending on the application area of the system, a successful compromise can have far-reaching consequences.
+		\end{alertblock}
+		\begin{exampleblock}{A better understanding of attacks and defenses is needed}
+			This thesis closes this research gap by developing targeted attacks and defenses using standard techniques from the field of adversarial examples for a visual recommendation system.
+		\end{exampleblock}
+	\end{frame}
+	
+	\section{Background}
+	\begin{frame}
+		\frametitle{Recommendation Systems}
+		\begin{figure}[H]
+			\centering
+			\subfloat[][Collaborative Filtering]{
+				\resizebox{0.4\textwidth}{!}{\input{../thesis/images/collaborative-filtering}}
+			}\hspace{1cm}
+			\subfloat[][Content-based Filtering]{
+				\resizebox{0.4\textwidth}{!}{\input{../thesis/images/content-based}}
+			}
+			\caption{Typical categorization for recommendation systems.}
+			\label{fig:rs}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Visual Recommendation Systems}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\textwidth]{images/pixyle}
+			\caption{Pixyle.ai: Visual AI in fashion e-commerce}
+			\label{fig:visual-rs}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Adversarial Examples}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=\textwidth]{../thesis/images/piggie}
+			\caption{On the left, we have an image of a pig that is correctly classified as such by a state-of-the-art CNN. After perturbing the image slightly, the network now returns class “airliner” with high confidence \parencite{mit2018adv}.}
+			\label{fig:adv}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Adversarial Examples}
+		\begin{figure}[H]
+			\centering
+			\subfloat[][A set of points that can be easily separated with a simple decision boundary.]{
+				\input{../thesis/images/linear-model}
+			}\hspace{0.5cm}
+			\subfloat[][The simple decision boundary does not separate the $l_\infty$-balls around the data points. Hence there are adversarial examples that will be misclassified.]{
+				\input{../thesis/images/linear-attack}
+			}\hspace{0.5cm}
+			\caption{Adapted from \cite{madry2017towards}}
+			\label{fig:adv-boundary}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Adversarial Training}
+		\begin{figure}[H]
+			\centering
+			\input{../thesis/images/adversarial-decision-boundary}
+			\caption{Separating the $l_\infty$-balls requires a significantly more complicated decision boundary. The resulting classifier is robust to adversarial examples with bounded $l_\infty$-norm perturbations.}
+		\end{figure}
+	\end{frame}
+	
+	\section{Related Work}
+	\begin{frame}
+		\frametitle{Related Work}
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=0.9\textwidth]{images/amr}
+			\caption{\cite{tang2019adversarial} explored the general vulnerability of content-based recommenders using CNNs to untargeted attacks.}
+			\label{fig:related-work}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Related Work}
+		\begin{figure}[H]
+			\centering
+			
+			\includegraphics[width=0.9\textwidth]{images/tamr}
+			\caption{\cite{di2020taamr} explored the vulnerability of content-based recommenders using CNNs to targeted misclassification attacks.}
+			\label{fig:related-work}
+		\end{figure}
+	\end{frame}
+	
+	\section{Dataset}
+	\begin{frame}
+		\frametitle{Dataset}
+		\begin{itemize}
+			\item We use the DeepFashion Attribute Prediction~\footnote{\url{http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/AttributePrediction.html}} dataset published by \cite{liuLQWTcvpr16DeepFashion}
+		\end{itemize}
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{ lccc } 
+				\toprule
+				& \multicolumn{2}{c}{Classification} & Samples \\
+				\cmidrule{2-4}
+				Dataset & Type & No. & Total \\
+				\midrule
+				DeepFashion Category & Multinomial & 46  & 279,057  \\
+				DeepFashion Texture  & Multinomial & 156 & 106,649  \\
+				\bottomrule
+			\end{tabular}
+			\caption{Summary of the preprocessed DeepFashion dataset.}
+			\label{tab:deepfashion-deduplicated}
+		\end{table}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Dataset}
+		\begin{figure}[H]
+			\centering
+			\subfloat[][Cardigan \\ \tiny striped]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Striped_Open-Front_Cardigan/img_00000012.jpg}
+			}
+			\subfloat[][Tank \\ \tiny print]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Eagle_Graphic_Self-Tie_Tank/img_00000027.jpg}
+			}
+			\subfloat[][Tee \\ \tiny striped]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Striped_Linen_Ringer_Tee/img_00000003.jpg}
+			}
+			\subfloat[][Dress \\ \tiny stripe]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Striped_Midi_Dress/img_00000056.jpg}
+			}
+			\subfloat[][Sweater \\ \tiny striped]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Striped_Waffle_Knit_Sweater/img_00000008.jpg}
+			}\\
+			\subfloat[][Blouse \\ \tiny floral]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Ruffled_Floral_Blouse/img_00000041.jpg}
+			}
+			\subfloat[][Shorts \\ \tiny houndstooth]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Houndstooth_Plaid_Shorts/img_00000027.jpg}
+			}
+			\subfloat[][Dress \\ \tiny chevron]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Strapless_Colorblock_Maxi_Dress/img_00000006.jpg}
+			}
+			\subfloat[][Skirt \\ \tiny dotted]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Dotted_A-Line_Skirt/img_00000018.jpg}
+			}
+			\subfloat[][Poncho \\ \tiny tribal]{
+				\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Abstract_Pattern_Fringed_Poncho/img_00000021.jpg}
+			}
+			\caption{Randomly sampled images from the DeepFashion dataset.}
+			\label{fig:deepfashion}
+		\end{figure}
+	\end{frame}
+	
+	\section{Model}
+	\begin{frame}
+		\frametitle{Model}
+		\begin{itemize}
+			\item Reproduced model, published by \cite{tuinhof2018image}.
+			\item Two-stage model using a CNN classifier and a k-NN search
+			\item CNN classifier is trained to predict category and texture
+			\item Latent embeddings of the trained CNN classifier are used for similarity based k-NN recommendations
+			\item As a similarity measure, cosine distance is used
+		\end{itemize}
+		\begin{table}[H]
+			\centering
+			\label{tab:category-results}
+			\begin{tabular}{ lcc } 
+				\toprule		
+				Category        & Ours & \cite{tuinhof2018image} \\
+				\midrule
+				Accuracy	    & 68.25 & 63.00\\
+				Top-5 Accuracy  & 93.14 & 84.00 \\
+				\bottomrule
+			\end{tabular}
+			\caption{Our category classifier results in comparison to the results reported in the original paper by \cite{tuinhof2018image}.}
+		\end{table}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Model}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\textwidth]{../thesis/images/tsne/normal-24-epochs-magnified-rescaled}
+			\caption{t-SNE visualization of articles from the DeepFashion dataset, using their feature vectors from the penultimate layer of the classifier.}
+			\label{fig:tsne}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Model}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/knn-reco}}
+			\caption{Ranked k-NN results for two randomly selected items}
+			\label{fig:reco}
+		\end{figure}
+	\end{frame}
+	\section{Attacks}
+	\begin{frame}
+		\frametitle{Attacks}
+		Threat model based on guidelines by \cite{carlini2017towards}:
+		\begin{itemize}
+			\item \textbf{adversary goal:} The adversary is interested in minimizing the cosine distance between the latent-space embeddings of an attack article image to a pre-existing target article image. By minimizing this distance, the chosen attack article decreases its rank in the list of nearest neighbors of the target article, thereby promoting the attack article.
+			\item \textbf{adversary knowledge:} We assume a white-box knowledge setting, in which the adversary holds full knowledge of the feature extraction model parameters. 
+			\item \textbf{adversary capability:} We restrict the adversary capability to make $l_\infty$-norm constrained perturbations to the image.
+		\end{itemize}
+	\end{frame}
+	\begin{frame}
+		\frametitle{Attacks}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/attack}}
+			\label{fig:attack-setup}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Fast Gradient Sign Method}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/fgsm}}
+			\caption{Adversarial example, created using the FGSM with $\epsilon = 0.03$. The perturbation is normalized for visualization purposes.}
+			\label{fig:fgsm-example}
+		\end{figure}
+		Cosine distances before and after FGSM attack for this example:
+		\begin{align}
+		dist(\mathcal{F}(A),\,\mathcal{F}(T)) &= 0.6247 \\
+		dist(\mathcal{F}(A + \delta),\,\mathcal{F}(T)) &= 0.5267
+		\end{align}
+	\end{frame}
+	
+	
+	
+	\begin{frame}
+		\frametitle{Projected Gradient Descent}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/pgd}}
+			\caption{Adversarial example, created using PGD with $\epsilon = 0.03$ and $32$ iterations. The perturbation is normalized for visualization purposes.}
+			\label{fig:pgd-example}
+		\end{figure}
+		Cosine distances before and after PGD attack for this example:
+		\begin{align}
+		dist(\mathcal{F}(A),\,\mathcal{F}(T)) &= 0.6247 \\
+		dist(\mathcal{F}(A + \delta),\,\mathcal{F}(T))) &= 0.0500
+		\end{align}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Projected Gradient Descent}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/pgd-reco}}
+			\caption{Recommendation results for original k-NN index (top) and manipulated index with injected PGD adversarial example (bottom)}
+			\label{fig:pgd-reco}
+		\end{figure}
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{Carlini \& Wagner Method}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/cw}}
+			\caption{Adversarial example, created using the CW method with $\epsilon = 0.03$ and 1,000 iterations. The perturbation is normalized for visualization purposes.}
+			\label{fig:cw-example}
+		\end{figure}
+		Cosine distances before and after CW attack for this example:
+		\begin{align}
+		dist(\mathcal{F}(A),\,\mathcal{F}(T)) &= 0.6247 \\
+		dist(\mathcal{F}(A + \delta),\,\mathcal{F}(T)) &= 0.0049
+		\end{align}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Carlini \& Wagner Method}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/cw-reco}}
+			\caption{Recommendation results for original k-NN index (top) and manipulated index with injected CW adversarial example (bottom)}
+			\label{fig:cw-reco}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Comparison}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/top3-normal-success}}
+			\caption{Success rates (\%) for $rank_{min}=3$, calculated over 10,000 random tuples (1,000 in the case of CW) for all attacks and $\epsilon$ values.}
+			\label{fig:top3-normal-success}
+		\end{figure}
+	\end{frame}
+	
+	\section{Defenses}
+	\begin{frame}
+		\frametitle{Defenses}
+		\begin{center}
+			\huge \textit{How can we defend our recommendation system against adversarial inputs?}
+		\end{center} 
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Adversarial Training}
+		\begin{itemize}
+			\item Train on adversarial examples using correct labels
+			\item Adversary objective, is to increase the likelihood of misclassification for the category, and texture attributes
+			\item Adversarial examples during training are generated using PGD-8 and restricting $l_\infty$ perturbations to $\epsilon=0.03$
+		\end{itemize}
+		\begin{table}[H]
+			\centering
+			\label{tab:adv-category-results}
+			\begin{tabular}{ lccc } 
+				\toprule		
+				Category        	 & Adversarial & Regular & $\Delta$\\
+				\midrule
+				Clean Accuracy	     & 56.06 & 68.25 & $-$ 12.19 \\
+				Adversarial Accuracy & 48.71 & 0.02  & $+$ 48.69  \\
+				\bottomrule
+			\end{tabular}
+			\caption{Category classification results on a clean and adversarial test set for a adversarially trained and regular classifier. The adversarial test set was generated using the PGD-8 attack and $\epsilon=0.03$.}
+		\end{table}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Adversarial Training}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/adv-reco}}
+			\caption{A recommendation result of our adversarially trained model after a targeted attack. The  adversarial example generated using the CW-1000 method for $\epsilon=0.3$, which we injected into the product catalog ranks on place 39 and is therefore not visible in the nearest neighbors displayed above.}
+			\label{fig:adv-reco}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Adversarial Training}
+		\begin{figure}[H]
+			\centering
+			\subfloat[][$\epsilon=0.01$]{
+				\includegraphics[height=0.18\textwidth]{../thesis/images/adv/adversarial-24-epochs/cw/0.01/attack}
+			}
+			\subfloat[][$\epsilon=0.05$]{
+				\includegraphics[height=0.18\textwidth]{../thesis/images/adv/adversarial-24-epochs/cw/0.05/attack}
+			}
+			\subfloat[][$\epsilon=0.1$]{
+				\includegraphics[height=0.18\textwidth]{../thesis/images/adv/adversarial-24-epochs/cw/0.1/attack}
+			}
+			\subfloat[][$\epsilon=0.2$]{
+				\includegraphics[height=0.18\textwidth]{../thesis/images/adv/adversarial-24-epochs/cw/0.2/attack}
+			}
+			\subfloat[][$\epsilon=0.3$]{
+				\includegraphics[height=0.18\textwidth]{../thesis/images/adv/adversarial-24-epochs/cw/0.3/attack}
+			}
+			\caption{Adversarial examples generated using CW-1000 for our adversarially trained recommendation system with increasing $\epsilon$ values ranging from 0.01 to 0.3. The target item for the attack is the same striped sweater. Interestingly the adversarial images with high epsilon values start to show relevant features of the target image.}
+			\label{fig:epsilon-adv}
+		\end{figure}
+	\end{frame}
+	
+	
+	
+	\begin{frame}
+		\frametitle{Adversarial Training}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/top3-adv-success}}
+			\caption{Success rates (\%) for $rank_{min}=3$, targeting an adversarially trained model, calculated over 10,000 random tuples (1,000 in the case of CW) for all attacks and $\epsilon$ values.}
+			\label{fig:top3-adv-success}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Curriculum Adversarial Training}
+		\begin{itemize}
+			\item Trade robustness for clean performance by increasing attack strength during training, starting with $k=0$
+			\item Adversarial examples are generated using PGD attacks with up to $k=8$, restricting $l_\infty$ perturbations to $\epsilon=0.03$
+		\end{itemize}
+		\begin{table}[H]
+			\centering
+			\label{tab:curr-adv-category-results}
+			\begin{tabular}{ lccc } 
+				\toprule		
+				Category          & Curriculum & Regular & $\Delta$\\
+				\midrule
+				Clean Accuracy	      & 62.29 & 68.25 & $-$ 5.96 \\
+				Adversarial Accuracy  & 27.45 & 0.02  & $+$ 27.43 \\
+				\bottomrule
+			\end{tabular}
+			\caption{Category classification results on a clean and adversarial test set for a classifier trained using curriculum adversarial training and a regular classifier. The adversarial test set was generated using the PGD-8 with $\epsilon=0.03$}
+		\end{table}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Curriculum Adversarial Training}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/curr-adv-reco}}
+			\caption{A recommendation result of our CAT model after a targeted attack. The adversarial example generated using the CW method for $\epsilon=0.2$, which we injected into the product catalog, ranks first among the target's neighbors.}
+			\label{fig:curr-adv-reco}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Curriculum Adversarial Training}
+		\begin{figure}[H]
+			\centering
+			\resizebox{\textwidth}{!}{\input{../thesis/images/top3-curriculum-adv-success}}
+			\caption{Attack success rates for $rank_{min}=3$ calculated over 10,000 random article tuples (1,000 in the case of CW) for all evaluated attacks and various $\epsilon$ values.}
+			\label{fig:top3-curriculum-adv-success}
+		\end{figure}
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{Comparison}
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{ lccc } 
+				\toprule		
+				& \multicolumn{3}{c}{Attack} \\
+				\cmidrule{2-4}
+				Defense & FGSM & PGD-128 & CW-1000 \\
+				\midrule
+				Unsecured  						& 0.07  & 98.32 & 99.70 \\
+				AT			& 0.03  & 0.07  & 0.30 \\
+				CAT & 0.00  & 14.89 & 32.80 \\
+				\bottomrule
+			\end{tabular}
+			\caption{Attack success rates for $rank_{min}=3$ calculated over 10,000 random article tuples (1,000 in the case of CW) for all evaluated models and $\epsilon=0.05$.}
+			\label{tab:defense-results}
+		\end{table}
+	\end{frame}
+	
+	\section{Conclusion}
+	\begin{frame}
+		\frametitle{Conclusion}
+		\begin{itemize}
+			\item We developed a new type of targeted item-to-item attack using state-of-the-art white-box methods and observed their effectiveness in compromising the integrity of the attacked visual recommendation system. 
+			
+			\item We tested two defense mechanisms utilizing adversarial training (AT) and were able to show that AT had a significant positive impact on the robustness of our system.
+			
+			\item Although our experiments demonstrated a strong robustness against our evaluated white-box attacks, it is unclear if and how far these results generalize for black-box or future unknown attacks.
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Conclusion}
+		\begin{itemize}
+			\item Also, the effect of similar attacks and defenses on hybrid RS using DNN remains to be explored.
+			
+			\item Additionally, the trade-off in recommendation quality and robustness caused by AT remains to be quantified, possibly by conducting user-surveys or A/B testing.
+			
+			\item Overall, our findings have once again demonstrated the inherent vulnerability of DNN, but have also given us hope that adversarially robust recommendation system models using DNN might be within current reach.
+		\end{itemize}
+	\end{frame}
+	
+	\section{Appendix}
+	
+	\begin{frame}
+		\frametitle{Technical Details}
+		Source code and results are published on GitHub \footnote{\url{https://github.com/philippnormann/master-thesis}}
+		
+		Implemented in \textit{Python} using the following libraries:
+		\begin{itemize}
+			\item Deep Learning Framework: \textbf{\textit{PyTorch}} \footnote{\url{https://github.com/pytorch/pytorch}}
+			\item Experiment Monitoring: \textbf{\textit{TensorBoard}} \footnote{\url{https://github.com/tensorflow/tensorboard}}
+			\item Approximate K-NN search: \textbf{\textit{NMSLIB}} \footnote{\url{https://github.com/nmslib/nmslib}}
+			\item Image Deduplication: \textbf{\textit{imagededup}} \footnote{\url{https://github.com/idealo/imagededup}}
+			\item Data Preprocessing: \textbf{\textit{pandas}} \footnote{\url{https://github.com/pandas-dev/pandas}}
+			\item Visualizations: \textbf{\textit{seaborn}} \footnote{\url{https://github.com/mwaskom/seaborn}}
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Fast Gradient Sign Method}
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{ lccccc } 
+				\toprule		
+				& \multicolumn{5}{c}{Maximal Perturbation} \\
+				\cmidrule{2-6}
+				$rank_{min}$ & $\epsilon = 0.01$ & $\epsilon = 0.02$ & $\epsilon = 0.03$  & $\epsilon = 0.04$ & $\epsilon = 0.05$  \\
+				\midrule
+				1 & 0.12 & 0.07 & 0.06 & 0.02 & 0.01 \\
+				3 & 0.27 & 0.16 & 0.14 & 0.09 & 0.07 \\
+				10 & 0.64 & 0.44 & 0.32 & 0.18 & 0.13 \\
+				100 & 2.87 & 2.45 & 1.83 & 1.36 & 0.99 \\
+				\bottomrule
+			\end{tabular}
+			\caption{Success rates (\%) using FGSM for 10,000 random tuples.}
+			\label{tab:fgsm-results}
+		\end{table}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Fast Gradient Sign Method}
+		\begin{figure}[H]
+			\centering
+			\resizebox{0.7\textwidth}{!}{\input{../thesis/images/scatter/normal-fgsm}}
+			\caption{Quantile regression plot of cosine distances between target and attack article, before and after FGSM attacks, using $\epsilon=0.05$}
+			\label{fig:fgsm-quantile}
+		\end{figure}
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{Projected Gradient Descent}
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{ lccccc } 
+				\toprule		
+				& \multicolumn{5}{c}{Maximal Perturbation} \\
+				\cmidrule{2-6}
+				$rank_{min}$ & $\epsilon = 0.01$ & $\epsilon = 0.02$ & $\epsilon = 0.03$  & $\epsilon = 0.04$ & $\epsilon = 0.05$  \\
+				\midrule
+				1 & 36.44 & 77.81 & 86.81 & 89.65 & 91.02 \\
+				3 & 44.33 & 86.40 & 94.06 & 96.13 & 97.09 \\
+				10 & 50.21 & 89.61 & 95.90 & 97.56 & 98.22 \\
+				100 & 62.55 & 94.13 & 97.95 & 98.74 & 99.13 \\
+				\bottomrule
+			\end{tabular}
+			\caption{Success rates (\%) using PGD-64 for 10,000 random tuples.}
+			\label{tab:pgd-results}
+		\end{table}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Projected Gradient Descent}
+		\begin{figure}[H]
+			\centering
+			\resizebox{0.7\textwidth}{!}{\input{../thesis/images/scatter/normal-pgd-32}}
+			\caption{Quantile regression plot of cosine distances between target and attack article, before and after PGD-32 attacks, using $\epsilon=0.05$}
+			\label{fig:pgd-quantile}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Carlini \& Wagner Method}
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{ lccccc } 
+				\toprule		
+				& \multicolumn{5}{c}{Maximal Perturbation} \\
+				\cmidrule{2-6}
+				$rank_{min}$ & $\epsilon = 0.01$ & $\epsilon = 0.02$ & $\epsilon = 0.03$  & $\epsilon = 0.04$ & $\epsilon = 0.05$  \\
+				\midrule
+				1 & 74.60 & 94.10 & 96.40 & 97.60 & 97.80 \\
+				3 & 83.10 & 98.10 & 99.40 & 99.70 & 99.70 \\
+				10 & 86.60 & 98.40 & 99.50 & 99.90 & 99.90 \\
+				100 & 91.30 & 99.40 & 99.90 & 100.00 & 100.00 \\
+				\bottomrule
+			\end{tabular}
+			\caption{Success rates (\%) using CW-1000 for 1,000 random tuples.}
+			\label{tab:cw-results}
+		\end{table}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Carlini \& Wagner Method}
+		\begin{figure}[H]
+			\centering
+			\resizebox{0.7\textwidth}{!}{\input{../thesis/images/scatter/normal-cw-1000}}
+			\caption{Quantile regression plot of cosine distances between target and attack article, before and after CW-1000 attacks, using $\epsilon=0.05$}
+			\label{fig:cw-quantile}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{Adversarial Training}
+		\begin{figure}[H]
+			\centering
+			\resizebox{0.7\textwidth}{!}{\input{../thesis/images/scatter/adv-cw-1000}}
+			\caption{Quantile regression plot of cosine distances between target and attack article, before and after performing CW-1000 attacks targeting an adversarially trained model, using $\epsilon=0.05$.}
+			\label{fig:adv-quantile}
+		\end{figure}
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{Curriculum Adversarial Training}
+		\begin{figure}[H]
+			\centering
+			\resizebox{0.7\textwidth}{!}{\input{../thesis/images/scatter/curriculum-adv-cw-1000}}
+			\caption{Quantile regression plot of cosine distances between target and attack article, before and after performing CW-1000 attacks targeting a model trained using curriculum AT for $\epsilon=0.05$.}
+			\label{fig:curr-adv-quantile}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}[allowframebreaks]
+		\frametitle{References}
+		\printbibliography
+	\end{frame}
+	
+\end{document}

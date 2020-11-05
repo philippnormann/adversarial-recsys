@@ -1,0 +1,173 @@
+% $Id: header.tex 1229 2009-10-23 13:58:42Z inf6254 $
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass
+  [ oneside            % beidseitiger Druck       
+  , abstract=on
+  , listof=totoc       % Verzeichnisse im Inhaltsverzeichnis
+  , bibliography=totoc % Literaturverzeichnis im Inhaltsverzeichnis
+  , parskip=half       % Absätze durch einen vergrößerten Zeilenabstand getrennt
+%  , draft              % Entwurfsversion
+  ]{scrreprt}          % Dokumentenklasse: KOMA-Script Buch
+  
+\addtokomafont{disposition}{\rmfamily}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{scrhack}
+\usepackage{ifpdf}
+\usepackage{ae}               % Fonts für pdfLaTeX, falls keine cm-super-Fonts installiert
+\usepackage{microtype}        % optischer Randausgleich, falls pdflatex verwandt
+\usepackage[pdftex]{graphicx} % Grafiken in pdfLaTeX
+\usepackage{subfig}
+
+\usepackage[a4paper,
+            inner=3cm,outer=3cm,
+            bindingoffset=0.5cm,
+            top=2cm,bottom=2cm,
+            footskip=2cm,includeheadfoot]{geometry}
+            
+\usepackage[utf8]{inputenc}         % Input encoding (allow direct use of special characters like "ä")
+\usepackage[american]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[automark]{scrlayer-scrpage} 	 % Schickerer Satzspiegel mit KOMA-Script
+\usepackage{setspace}           	 % Allow the modification of the space between lines
+\usepackage{booktabs}           	 % Netteres Tabellenlayout
+\usepackage{multicol}               % Mehrspaltige Bereiche
+\usepackage{subfig}                 % allow sub figures
+\usepackage[table]{xcolor} 
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{svg}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{dsfont}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{gensymb}
+\usepackage{blindtext}
+\usepackage{todonotes}
+\setuptodonotes{inline}
+
+% Math
+\DeclareMathOperator*{\minimize}{minimize}
+
+% Layout
+\pagestyle{scrheadings}
+
+\clubpenalty = 10000
+\widowpenalty = 10000
+\displaywidowpenalty = 10000
+
+\makeatletter
+\renewcommand{\fps@figure}{htbp}
+\makeatother
+
+%% Citation properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{csquotes}
+\usepackage[backend=biber, backref=true, style=apa]{biblatex}
+\patchcmd{\bibsetup}{\interlinepenalty=5000}{\interlinepenalty=10000}{}{}
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{8000}
+
+\DeclareFieldFormat{citehyperref}{%
+	\DeclareFieldAlias{bibhyperref}{noformat}% Avoid nested links
+	\bibhyperref{#1}}
+
+\DeclareFieldFormat{textcitehyperref}{%
+	\DeclareFieldAlias{bibhyperref}{noformat}% Avoid nested links
+	\bibhyperref{%
+		#1%
+		\ifbool{cbx:parens}
+		{\bibcloseparen\global\boolfalse{cbx:parens}}
+		{}}}
+
+\savebibmacro{cite}
+\savebibmacro{textcite}
+
+\renewbibmacro*{cite}{%
+	\printtext[citehyperref]{%
+		\restorebibmacro{cite}%
+		\usebibmacro{cite}}}
+
+\renewbibmacro*{textcite}{%
+	\ifboolexpr{
+		( not test {\iffieldundef{prenote}} and
+		test {\ifnumequal{\value{citecount}}{1}} )
+		or
+		( not test {\iffieldundef{postnote}} and
+		test {\ifnumequal{\value{citecount}}{\value{citetotal}}} )
+	}
+	{\DeclareFieldAlias{textcitehyperref}{noformat}}
+	{}%
+	\printtext[textcitehyperref]{%
+		\restorebibmacro{textcite}%
+		\usebibmacro{textcite}}}
+
+%% Tikz properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
+\usepackage{forest}
+\usepackage{tikzpeople}
+\usepackage{fontawesome}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\usepgfplotslibrary{groupplots} 
+
+\usetikzlibrary{calc,intersections,positioning,backgrounds,matrix,shapes}
+\definecolor{color0}{rgb}{0.917647058823529,0.917647058823529,0.949019607843137}
+\definecolor{color1}{rgb}{0.298039215686275,0.447058823529412,0.690196078431373}
+\definecolor{color2}{rgb}{0.333333333333333,0.658823529411765,0.407843137254902}
+\definecolor{color3}{rgb}{0.768627450980392,0.305882352941176,0.32156862745098}
+\definecolor{color4}{rgb}{0.505882352941176,0.447058823529412,0.698039215686274}
+\definecolor{color5}{rgb}{0.8,0.725490196078431,0.454901960784314}
+\definecolor{color6}{rgb}{0.392156862745098,0.709803921568627,0.803921568627451}
+
+\forestset{%
+	and/.style={
+		tikz+={%
+			\draw ($(!1.child anchor)!.35!(.parent anchor)$) [bend right=15] to node[above]{{\scriptsize and}} ($(.parent anchor)!.65!(!l.child anchor)$);
+		},
+	},
+}
+
+%% Document properties %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\thesisname}{Master Thesis}
+\newcommand{\titel}{Adversarial Attacks and Defenses for Image-Based Recommendation Systems using Deep Neural Networks}
+\newcommand{\authorname}{Philipp Normann}
+\newcommand{\untertitel}{}
+\newcommand{\Datum}{August 26, 2020}
+
+\definecolor{darkblue}{rgb}{0,0,.5}
+\definecolor{brightgreen}{HTML}{D5E8D4}
+\definecolor{brightred}{HTML}{F8CECC}
+
+\ifpdf
+  \hypersetup
+  	{ pdftitle={\titel}
+    , pdfsubject={\thesisname}
+    , pdfauthor={\authorname}
+    }
+\else
+\fi
+
+%% Listings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{listings}
+\KOMAoptions{listof=totoc} % necessary because of scrhack
+\renewcommand{\lstlistlistingname}{List of Listings}
+\lstset
+  { basicstyle=\small\ttfamily
+  , breaklines=true
+  , captionpos=b
+  , showstringspaces=false
+  , keywordstyle={}
+  }
+
+% Glossary % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[printonlyused, nohyperlinks]{acronym} % list of acronyms and abbreviations
+\usepackage{etoolbox}
+\preto\chapter\acresetall

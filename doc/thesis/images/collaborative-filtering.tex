@@ -1,0 +1,23 @@
+\begin{tikzpicture}
+	\node[alice, scale=2](alice){};
+	\node[bob, scale=2, right=of alice, xshift=1cm](bob){};
+	
+	\node[above=of $(alice)!0.5!(bob)$] (commonDocs) {
+		\color{color3}\huge\faFileTextO\,\color{color2}\huge\faFileTextO
+	};
+	\node[above=of commonDocs, yshift=-1cm] {Viewed by both users};
+	
+	\node[below=of $(alice)!0.5!(bob)$] (recommendedDoc) {
+		\color{color1}\huge\faFileTextO
+	};
+	\node[below=of recommendedDoc, yshift=1cm, text width=4cm, text centered] {
+		Viewed by her,\\recommended to him
+	};
+	
+	\draw[<->, very thick, color1] (alice) to node[above] {Similar users}(bob);
+	\draw[->, thick, color5] (alice) to (commonDocs);
+	\draw[->, thick, color5] (bob) to (commonDocs);
+		
+	\draw[->, thick, color5] (alice) to (recommendedDoc);
+	\draw[->, thick, color2] (recommendedDoc) to (bob);
+\end{tikzpicture}

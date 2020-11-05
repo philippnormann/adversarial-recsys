@@ -1,0 +1,73 @@
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=2.5cm}, width=5.5cm]
+
+\nextgroupplot[
+axis background/.style={fill=color0},
+axis line style={white},
+legend cell align={left},
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, at={(0.03,0.97)}, anchor=north west, draw=none, fill=color0, font=\scriptsize},
+tick align=outside,
+tick pos=left,
+xmajorgrids,
+scaled x ticks = false, 
+scaled y ticks = false, 
+x grid style={white},
+y grid style={white},
+ymajorgrids,
+xtick style={color=white!15!black},
+ytick style={color=white!15!black},
+ticklabel style = {font=\scriptsize},
+title={Category: Shorts},
+xmin=0, xmax=1.0,
+ymin=-0.25, ymax=10.15,
+ytick={0.375,...,10.375},
+yticklabels={Blouse, Joggers, Top, Leggings, Culottes, Sweatshorts, Cutoffs, Skirt, Trunks, Shorts}
+]
+
+\draw[draw=none,fill=color1] (axis cs:0,0) rectangle (axis cs:1.8125e-06,0.75);
+\draw[draw=none,fill=color1] (axis cs:0,1) rectangle (axis cs:2.8439e-06,1.75);
+\draw[draw=none,fill=color1] (axis cs:0,2) rectangle (axis cs:1.1450e-05,2.75);
+\draw[draw=none,fill=color1] (axis cs:0,3) rectangle (axis cs:2.1354e-05,3.75);
+\draw[draw=none,fill=color1] (axis cs:0,4) rectangle (axis cs:2.3611e-05,4.75);
+\draw[draw=none,fill=color1] (axis cs:0,5) rectangle (axis cs:8.1404e-05,5.75);
+\draw[draw=none,fill=color1] (axis cs:0,6) rectangle (axis cs:0.0002,6.75);
+\draw[draw=none,fill=color1] (axis cs:0,7) rectangle (axis cs:0.0003,7.75);
+\draw[draw=none,fill=color1] (axis cs:0,8) rectangle (axis cs:0.0222,8.75);
+\draw[draw=none,fill=color2] (axis cs:0,9) rectangle (axis cs:0.9772,9.75);
+
+\nextgroupplot[
+axis background/.style={fill=color0},
+axis line style={white},
+legend cell align={left},
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, at={(0.03,0.97)}, anchor=north west, draw=none, fill=color0, font=\scriptsize},
+tick align=outside,
+tick pos=left,
+xmajorgrids,
+scaled x ticks = false, 
+scaled y ticks = false, 
+x grid style={white},
+y grid style={white},
+ymajorgrids,
+xtick style={color=white!15!black},
+ytick style={color=white!15!black},
+ticklabel style = {font=\scriptsize},
+title={Texture: print},
+xmin=0, xmax=0.227,
+ymin=-0.25, ymax=10.15,
+ytick={0.375,...,10.375},
+yticklabels={floral print, pom-pom, tribal, stripe, printed, polka dot, dot, floral, striped, print}
+]
+
+\draw[draw=none,fill=color1] (axis cs:0,0) rectangle (axis cs:0.0214,0.75);
+\draw[draw=none,fill=color1] (axis cs:0,1) rectangle (axis cs:0.0237,1.75);
+\draw[draw=none,fill=color1] (axis cs:0,2) rectangle (axis cs:0.0342,2.75);
+\draw[draw=none,fill=color1] (axis cs:0,3) rectangle (axis cs:0.0507,3.75);
+\draw[draw=none,fill=color1] (axis cs:0,4) rectangle (axis cs:0.0668,4.75);
+\draw[draw=none,fill=color1] (axis cs:0,5) rectangle (axis cs:0.0741,5.75);
+\draw[draw=none,fill=color1] (axis cs:0,6) rectangle (axis cs:0.0823,6.75);
+\draw[draw=none,fill=color1] (axis cs:0,7) rectangle (axis cs:0.0834,7.75);
+\draw[draw=none,fill=color1] (axis cs:0,8) rectangle (axis cs:0.0878,8.75);
+\draw[draw=none,fill=color1] (axis cs:0,9) rectangle (axis cs:0.2200,9.75);
+\end{groupplot}
+
+\end{tikzpicture}

@@ -1,0 +1,89 @@
+\chapter{Dataset}
+\label{chp:dataset}
+Throughout this thesis, we work with a public image classification dataset. This dataset is the basis for training the image-based k-NN recommendation system in the following Chapter~\ref{chp:model}. The following paragraphs will summarize the dataset and explain how we preprocessed the data before training. 
+
+\section{DeepFashion}
+We use the popular DeepFashion Attribute Prediction~\footnote{\url{http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/AttributePrediction.html}} dataset published by \cite{liuLQWTcvpr16DeepFashion}. This dataset contains 289,222  annotated garment images with their corresponding fashion category and texture type. Refer to Table~\ref{tab:deepfashion-original} for a full summary of the dataset. Since the type of images is very similar to the ones found in fashion e-commerce sites, this dataset lends itself well to our goal of training a feature extractor for fashion images and is also used by \cite{tuinhof2018image} in the reference implementation of the model, which we are trying to reproduce, attack and defend in the following chapters.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ lcccccc } 
+		\toprule
+		& \multicolumn{2}{c}{Classification} & \multicolumn{4}{c}{Samples} \\
+		\cmidrule{2-7}
+		Dataset & Type & No. & Total & Train & Val & Test \\
+		\midrule
+		DeepFashion Category & Multinomial & 46  & 289,222 & 209,222 & 40,000 & 40,000 \\
+		DeepFashion Texture  & Multinomial & 156 & 111,405 & 80,522  & 15,538 & 15,345 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Summary of the original DeepFashion Attribute Prediction dataset.}
+	\label{tab:deepfashion-original}
+\end{table}
+
+The original DeepFashion dataset contains quite a few duplicate entries, which we filtered out by deduplicating examples using perceptual hashing \parencite{idealods2019imagededup}. The resulting dataset is summarized in Table~\ref{tab:deepfashion-deduplicated}. In order to stabilize the training procedure, we also removed all examples without texture labels arriving at a total number of 106,649 labeled example images.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ lcccccc } 
+		\toprule
+		& \multicolumn{2}{c}{Classification} & \multicolumn{4}{c}{Samples} \\
+		\cmidrule{2-7}
+		Dataset & Type & No. & Total & Train & Val & Test \\
+		\midrule
+		DeepFashion Category & Multinomial & 46  & 279,057 & 201,908 & 38,620 & 38,529 \\
+		DeepFashion Texture  & Multinomial & 156 & 106,649 & 77,059  & 14,835 & 14,755 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Summary of the preprocessed DeepFashion Attribute Prediction dataset.}
+	\label{tab:deepfashion-deduplicated}
+\end{table}
+In Figure~\ref{fig:deepfashion-top-labels}, we provide an overview of the top ten classes for both classification tasks. Additionally, we display ten randomly selected sample images from the DeepFashion dataset with their corresponding labels in Figure~\ref{fig:deepfashion}.
+\begin{figure}[H]
+	\centering
+	\subfloat[][Example counts of the Top-10 category labels]{
+		\resizebox{0.45\textwidth}{!}{\input{images/deepfashion-top-categories}}
+	}
+	\hfill
+	\subfloat[][Example counts of the Top-10 texture labels]{
+		\resizebox{0.45\textwidth}{!}{\input{images/deepfashion-top-textures}}
+	}
+	\caption{Example counts for the most common labels of the DeepFashion dataset.}
+	\label{fig:deepfashion-top-labels}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\subfloat[][Cardigan \\ \tiny striped]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Striped_Open-Front_Cardigan/img_00000012.jpg}
+	}
+	\subfloat[][Tank \\ \tiny print]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Eagle_Graphic_Self-Tie_Tank/img_00000027.jpg}
+	}
+	\subfloat[][Tee \\ \tiny striped]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Striped_Linen_Ringer_Tee/img_00000003.jpg}
+	}
+	\subfloat[][Dress \\ \tiny stripe]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Striped_Midi_Dress/img_00000056.jpg}
+	}
+	\subfloat[][Sweater \\ \tiny striped]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Striped_Waffle_Knit_Sweater/img_00000008.jpg}
+	}\\
+	\subfloat[][Blouse \\ \tiny floral]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Ruffled_Floral_Blouse/img_00000041.jpg}
+	}
+	\subfloat[][Shorts \\ \tiny houndstooth]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Houndstooth_Plaid_Shorts/img_00000027.jpg}
+	}
+	\subfloat[][Dress \\ \tiny chevron]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Strapless_Colorblock_Maxi_Dress/img_00000006.jpg}
+	}
+	\subfloat[][Skirt \\ \tiny dotted]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Dotted_A-Line_Skirt/img_00000018.jpg}
+	}
+	\subfloat[][Poncho \\ \tiny tribal]{
+		\includegraphics[height=0.2\textwidth]{../../data/DeepFashion/img/Abstract_Pattern_Fringed_Poncho/img_00000021.jpg}
+	}
+	\caption{Randomly sampled images from the DeepFashion dataset.}
+	\label{fig:deepfashion}
+\end{figure}

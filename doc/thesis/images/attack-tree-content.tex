@@ -1,0 +1,24 @@
+\begin{forest}
+for tree={
+  draw,
+  align=center,
+  l sep=1cm,
+  s sep=0.25cm,
+  anchor=north,
+  child anchor=north,
+  font=\small 
+},
+[{Manipulate the output \\ of a  content-based \\ recommendation system}, name=AD
+  [{Decrease \\ overall performance}
+  	[{Poison training\\ data with \\ mislabeled \\ items}]  
+  ]
+  [{Promote \\ target item}, and
+  	[{Identify viable \\ attack item}]  
+  	[{Maximize \\ similarity of \\ target item  \\ to attack item}]  
+  ]
+  [{Demote \\ target item}, and
+  	[{Identify similar \\ items to target}]
+  	[{Inject attack \\ items with \\ higher similarity \\ than target}]
+  ]
+]
+\end{forest}

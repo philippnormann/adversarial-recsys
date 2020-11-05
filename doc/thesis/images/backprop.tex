@@ -1,0 +1,36 @@
+\begin{tikzpicture}[
+shorten >=1pt,->,
+font=\scriptsize,
+node distance=0.75cm and 1.75cm,
+every pin edge/.style={<-,shorten <=1pt},
+neuron/.style={circle,minimum size=20pt,inner sep=0pt},
+input neuron/.style={neuron, fill=color2!50, draw=color2, thick},
+output neuron/.style={neuron, fill=color3!50, draw=color3, thick},
+hidden neuron/.style={neuron, fill=color1!50, draw=color1, thick},
+activation/.style={draw=color2!75!black!50, thick, bend angle=15},
+gradient/.style={draw=color3!75!black!50, thick, bend angle=45},
+]
+
+\node[input neuron] (x0) {$x_0$};
+\node[input neuron, below=of x0] (x1) {$x_1$};
+\node[input neuron, below=of x1] (x2) {$x_2$};
+
+\node[hidden neuron, right=of $(x0)!0.5!(x1)$] (h0) {$h_0$};
+\node[hidden neuron, right=of $(x1)!0.5!(x2)$] (h1) {$h_1$};
+
+\node[output neuron, right=of $(h0)!0.5!(h1)$] (y) {$\hat{y}$};
+
+\draw[activation, ->, bend left] (x0) to node[above, sloped]{\color{color2}$activations$} (h0);
+\draw[activation, ->, bend right] (x0) to (h1);
+\draw[activation, ->, bend left] (x1) to (h0);
+\draw[activation, ->, bend right] (x1) to (h1);
+\draw[activation, ->, bend left] (x2) to (h0);
+\draw[activation, ->, bend right] (x2) to (h1);
+
+\draw[activation, ->, bend right] (h0) to (y);
+\draw[activation, ->, bend left] (h1) to (y);
+
+\draw[gradient, ->, bend right] (y) to node[above, sloped]{\color{color3}$gradients$} (h0);
+\draw[gradient, ->, bend left] (y) to (h1);
+
+\end{tikzpicture}

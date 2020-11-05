@@ -1,0 +1,32 @@
+\chapter{Introduction}
+Recommendation systems (\acsp{RS}) are a special kind of \ac{DSS} that can help users quickly find what they desire or guide them towards new content they might find appealing. These kinds of systems have reached increasing industrial adoption in recent years. Today, numerous companies, ranging from e-commerce marketplaces\,\footnote{Otto GmbH \& Co KG \url{https://www.otto.de}}\,\footnote{Amazon.com Inc. \url{https://www.amazon.com}} to music\,\footnote{Spotify Technology S.A. \url{https://www.spotify.com}} and video\,\footnote{Netflix Inc. \url{https://www.netflix.com}} streaming services, as well as social networks\,\footnote{Facebook Inc. \url{https://www.facebook.com}} and news aggregators\,\footnote{Google Inc.  \url{https://news.google.com}}, successfully deploy \acp{RS} to improve the user experience of their services and subsequently gain a measurable competitive advantage, as demonstrated by \textcite{chen2004impact}.  
+
+However, while these systems affect a lot of our daily decisions, they are also exposed to external threats from malicious actors, which try to exploit these \acp{RS} to their advantage, through targeted manipulation of the data used for \ac{RS} training and application. The goals of attackers can range from promoting their products to manipulating public opinion on a specific topic. Depending on the application area of the \ac{RS}, a successful compromise can have far-reaching consequences. Therefore, a better understanding of potential attacks and defenses is essential to develop reliable and robust systems, which we can trust.
+
+Adversarial examples are inputs to a machine-learning model that are intended to force the model to make incorrect predictions and were first formally described by \textcite{dalvi2004adversarial} when researchers studied the techniques used by spammers to circumvent spam filters. In particular, deep neural networks but also many other categories of machine learning models are highly vulnerable to attacks based on small modifications of the input to the model at prediction time, as first demonstrated by \textcite{szegedy2013intriguing}. Since then, the topic of adversarial examples has developed into a fast-growing research field \parencite{carlini2019adversarial}.
+
+Researchers have also successfully performed adversarial attacks against real-world \acp{RS}, such as YouTube, Google Search, Amazon, and Yelp in experiments \parencite{xing2013take, yang2017fake}. Large companies like Sony, Amazon, and eBay have also publicly reported that they have suffered from such attacks in practice \parencite{lam2004shilling}.
+
+Most previous work on the potential attacks against and defenses for \acp{RS} has focused on traditional collaborative filtering methods, particularly \ac{MF} algorithms. Various attacks, such as the injection of handcrafted fake profiles, also called shilling attacks \parencite{chirita2005preventing} or, more recently, automatically generated fake user profiles \parencite{christakopoulou2019adversarial}, have been studied. However, only very little research, with a focus on content-based \acp{RS}, especially those utilizing deep learning techniques and their exploitability by adversarial examples, has been published. While two previous works have already explored the general vulnerability of content-based \acp{RS} using \acp{CNN} to untargeted attacks \parencite{tang2019adversarial} and targeted category misclassification attacks \parencite{di2020taamr}, no previous study has explored the feasibility of targeting specific recommendation slots and items using adversarial attacks. 
+
+This thesis closes this research gap by developing targeted attacks and defenses using standard techniques from the field of adversarial examples to a content-based \ac{RS}. Our goal is to investigate the vulnerability of a deep learning-based \acp{RS} to our proposed attacks and to evaluate the effectiveness of published defense techniques.
+
+\section{Structure}
+The chapters of this thesis are structured in the following way:
+\begin{itemize}
+	\item \textbf{Chapter~\ref{chp:background}}: Provides the relevant theoretical background for the context of deep learning, specifically adversarial learning and recommendation systems. This background information includes topics such as supervised learning, image classification, optimization of parametric models, \acp{ANN}, backpropagation, popular recommendation frameworks, and adversarial attacks.
+	
+	\item \textbf{Chapter~\ref{chp:threat-model}}: Performs a systematic analysis of the adversarial goals and capabilities concerning content-based \acp{RS}.
+	
+	\item \textbf{Chapter~\ref{chp:dataset}}: Provides an overview of the DeepFashion dataset used for training the image-based recommendation system.
+	
+	\item \textbf{Chapter~\ref{chp:model}}: Defines the type of image-based recommendation system that we used as the foundation for our subsequent robustness studies.
+	
+	\item \textbf{Chapter~\ref{chp:attacks}}: Presents our proposed targeted item-to-item attacks and discuss our experimental results.
+	
+	\item \textbf{Chapter~\ref{chp:defenses}}: Evaluates two published defense techniques against adversarial inputs for our recommendation system.
+
+	\item \textbf{Chapter~\ref{chp:conclusion}}: Presents a conclusion of our experiments and discuss the current state of research regarding adversarial attacks on \acp{RS} using \acp{DNN}.
+\end{itemize}
+
+

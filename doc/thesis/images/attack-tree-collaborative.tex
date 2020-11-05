@@ -1,0 +1,24 @@
+\begin{forest}
+	for tree={
+		draw,
+		align=center,
+		l sep=1cm,
+		s sep=0.25cm,
+		anchor=north,
+		child anchor=north,
+		font=\small 
+	},
+	[{Manipulate the output \\ of a collaborative filtering\\ recommendation system}, name=AD
+	[{Decrease \\ overall performance}
+	[{Inject corrupted \\ fake user profiles}]  
+	]
+	[{Promote \\ target item}, and,
+		[{Create fake \\ user profiles}]  
+		[{Rate target \\ items highly}]  
+	]
+	[{Demote \\ target item}, and
+		[{Create fake \\ user profiles}]  
+		[{Rate target \\ items poorly}]  
+	]
+	]
+\end{forest}

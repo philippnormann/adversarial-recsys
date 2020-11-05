@@ -1,0 +1,60 @@
+\tikzset{snake it/.style={decorate, decoration=snake}}
+
+\begin{tikzpicture}
+
+% green samples
+\node [draw=color2, very thick, fill=color2, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (0.6,1.3) {};
+\filldraw[color2] (0.6,1.3) circle (3pt);
+
+\node [draw=color2, very thick, fill=color2, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (-0.6,1.2) {};
+\filldraw[color2] (-0.6,1.2) circle (3pt);
+
+\node [draw=color2, very thick, fill=color2, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (0.0,0.7) {};
+\filldraw[color2] (0.0,0.7) circle (3pt);
+
+\node [draw=color2, very thick, fill=color2, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (-0.6,0.1) {};
+\filldraw[color2] (-0.6,0.1) circle (3pt);
+
+\node [draw=color2, very thick, fill=color2, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (-1.2,-0.5) {};
+\filldraw[color2] (-1.2,-0.5) circle (3pt);
+
+\node [draw=color2, very thick, fill=color2, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (-1.25,0.6) {};
+\filldraw[color2] (-1.25,0.6) circle (3pt);
+
+% blue samples
+\node [draw=color1, very thick, fill=color1, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (0.3,-0.22) {};
+\filldraw[color1]  (0.3,-0.22) circle (3pt);
+
+\node [draw=color1, very thick, fill=color1, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (0.9,0.25) {};
+\filldraw[color1]  (0.9,0.25) circle (3pt);
+
+\node [draw=color1, very thick, fill=color1, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (0.55,-0.85) {};
+\filldraw[color1]  (0.55,-0.85) circle (3pt);
+
+\node [draw=color1, very thick, fill=color1, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (-0.1,-0.9) {};
+\filldraw[color1]  (-0.1,-0.9) circle (3pt);
+
+\node [draw=color1, very thick, fill=color1, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (-0.6,-1.4) {};
+\filldraw[color1]  (-0.6,-1.4) circle (3pt);
+
+\node [draw=color1, very thick, fill=color1, fill opacity=0.25, shape=rectangle, minimum width=0.75cm, minimum height=0.75cm, anchor=center] at (1.2,-1.25) {};
+\filldraw[color1]  (1.2,-1.25) circle (3pt);
+
+% linear model
+\draw[black!50, ultra thick] (-1.5,-2) -- (1.5,2);
+
+% robust model
+\draw [color3, ultra thick] plot [smooth, tension=0.75] coordinates { 
+	(-1.7,-1.9) 
+	(-1.1,-1.03) 
+	(-0.65,-0.9) 
+	(-0.6,-0.45) 
+	(-0.15,-0.4) 
+	(-0.15,0.23) 
+	(0.45,0.23) 
+	(0.45,0.7) 
+	(1.1,0.85)
+	(1.7,1.9)
+};
+
+\end{tikzpicture}

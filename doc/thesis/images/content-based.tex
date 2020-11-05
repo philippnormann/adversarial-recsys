@@ -1,0 +1,13 @@
+\begin{tikzpicture}
+	\node[bob, scale=2](bob){};
+	
+	\node[right=of bob, yshift=-1.5pt] (viewedDoc) {\color{color3}\huge\faFileTextO};
+	\node[above=of viewedDoc, yshift=-1cm] {Viewed by user};
+	
+	\node[below=of viewedDoc] (similarDoc) {\color{color2}\huge\faFileTextO};
+	\node[below=of similarDoc, yshift=1cm] {Recommend to user};
+	
+	\draw[<->, very thick, color1] (viewedDoc) to node[right] {Similar items} (similarDoc);
+	\draw[->, thick, color5] (bob) to (viewedDoc);
+	\draw[->, thick, color2] (similarDoc) to (bob);
+\end{tikzpicture}

@@ -1,0 +1,39 @@
+% This file was created by tikzplotlib v0.9.3.
+\begin{tikzpicture}
+
+\definecolor{color0}{rgb}{0.917647058823529,0.917647058823529,0.949019607843137}
+\definecolor{color1}{rgb}{0.298039215686275,0.447058823529412,0.690196078431373}
+
+\begin{axis}[
+axis background/.style={fill=color0},
+axis line style={white},
+tick align=outside,
+tick pos=left,
+title={Example counts for top 10 categories},
+x grid style={white},
+xmajorgrids,
+xmin=0, xmax=31539.9,
+xtick style={color=white!15!black},
+y grid style={white},
+ymajorgrids,
+ymin=-0.5, ymax=9.5,
+ytick style={color=white!15!black},
+ytick={0,1,2,3,4,5,6,7,8,9},
+yticklabels={Romper,Top,Cardigan,Sweater,Tank,Skirt,Shorts,Blouse,Tee,Dress}
+]
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,-0.25) rectangle (axis cs:3293,0.25);
+\addlegendimage{ybar,ybar legend,draw=none,fill=color1,line width=0.12pt};
+\addlegendentry{category_label}
+
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,0.75) rectangle (axis cs:3715,1.25);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,1.75) rectangle (axis cs:4402,2.25);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,2.75) rectangle (axis cs:4617,3.25);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,3.75) rectangle (axis cs:5658,4.25);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,4.75) rectangle (axis cs:5812,5.25);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,5.75) rectangle (axis cs:8001,6.25);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,6.75) rectangle (axis cs:9813,7.25);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,7.75) rectangle (axis cs:16015,8.25);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0,8.75) rectangle (axis cs:30038,9.25);
+\end{axis}
+
+\end{tikzpicture}

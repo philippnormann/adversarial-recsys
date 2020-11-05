@@ -1,0 +1,225 @@
+\chapter{Attacks}
+\label{chp:attacks}
+After giving an overview of the dataset and model, which we use as a basis for our following experiments, we will now define our proposed targeted item-to-item attacks and discuss our experimental results against an undefended visual \acl{RS}, as described in Chapter~\ref{chp:model}.
+
+\section{Adversary Model}
+\label{sec:adv-model}
+Before diving into the details of our attack experiments, we outline our adversary threat model based on the guidelines proposed by \cite{carlini2017towards}. Our adversary's assumptions are:
+\begin{itemize}
+	\item \textbf{adversary goal:} The adversary is interested in minimizing the cosine distance, as defined in Equation~\ref{eq:dist}, between the latent-space embeddings of an attack article image to a pre-existing target article image. By minimizing this distance, the chosen attack article decreases its rank in the list of nearest neighbors of the target article, thereby promoting the attack article.
+	\item \textbf{adversary knowledge:} We assume a white-box knowledge setting, in which the adversary holds full knowledge of the feature extraction model parameters used to estimate the targeted perturbation. 
+	\item \textbf{adversary capability:} We restrict the adversary capability to make $l_\infty$-norm constrained perturbations to the attack image.
+\end{itemize}
+
+\section{Setup}
+A visualization of our proposed item-to-item attack setup is depicted in Figure~\ref{fig:attack-setup}.  We first perform a forward pass of the \acl{CNN} feature extractor $\mathcal{F}$ for both the original attack image $A$ and our target image $T$. Using the resulting feature embeddings, we can then calculate the latent space cosine distance from Equation~\ref{eq:dist}, between our unmodified attack and target images. We choose this distance-metric as our adversary objective function which we want to minimize while restricting the $l_\infty$-norm of our additive perturbations $\delta$, i.e.
+\begin{equation}
+\minimize_{\|\delta\|_\infty \le \epsilon} \quad dist(\mathcal{F}(A + \delta),\,\mathcal{F}(T)).
+\label{eq:adv-loss}
+\end{equation}
+Using the three evaluated gradient-based attack methods, namely \ac{FGSM}, \ac{PGD}, and \ac{CW}, we minimize this objective function by performing a backward pass through the network to the attack image and adjusting the targeted perturbations in the opposite direction of the calculated gradients. Depending on the attack method, we repeat this optimization step iteratively to approximate the loss surface as accurately as possible.
+\begin{figure}[H]
+  	\centering
+  	\input{images/attack}
+  	\caption{Graph visualization of our white-box attack setup, used for exploiting the content-based recommendation system, described in Chapter \ref{chp:model}. The goal of the attack is to perturb the image pixels of a given attack article, in order to minimize its feature space cosine distance to a chosen target article, while keeping the applied perturbation within a defined $l_\infty$ budget.}
+  	\label{fig:attack-setup}
+\end{figure}
+
+\section{Evaluation Metric}
+To compare the effectiveness of the different attack methods, we define a quantitative evaluation metric, measuring the success of an adversarial example in achieving the adversary goal, defined in Section~\ref{sec:adv-model}. We evaluate these success metrics on $n$ random attack tuples sampled from the test set of article images for each attack. To increase the difficulty of attacks and prevent false positives, we ensure that items of each attack tuple belong to different garment categories. We consider an attack successful if the adversarial article can decrease its recommendation rank $rank(\mathcal{F}(A+\delta), \mathcal{F}(T)$ among the \ac{k-NN} for the target under a defined minimum threshold $rank_{min}$. Therefore the success rate calculated over $n$ attack tuples is defined as
+\begin{equation}
+success\,rate =  \frac{1}{n} \sum\limits_{i=0}^{n} \mathds{1}  \big\{ rank( \mathcal{F}(A_i+\delta_i), \,\mathcal{F}(T_i)) \le rank_{min} \big\} .
+\label{eq:adv-success}
+\end{equation}
+Depending on the environment and deployment of the recommendation algorithm, the minimum rank required to gain display space might vary. Therefore we compare the success rates for multiple rank thresholds, calculating the number of successful attacks that achieve a target rank equal to or lower than $rank_{min}=(1, 3, 10, 100)$. 
+
+\section{Evaluation of Attack Methods}
+In this section, we will discuss our experimental results for performing our proposed targeted item-to-item attacks against our \acl{RS} using three well-known white-box attack methods, namely \ac{FGSM}, \ac{PGD}, and \ac{CW}.
+
+\subsection{Fast Gradient Sign Method}
+Starting with the single-step \acl{FGSM}, we assess its effectiveness in minimizing the cosine distances between image embedding produced by our \ac{CNN} feature extractor. An example attack tuple calculated using \ac{FGSM} can be seen in Figure~\ref{fig:fgsm-example}. 
+\begin{figure}[H]
+	\centering
+	\input{images/fgsm}
+	\caption{Adversarial example, created using the \acs{FGSM} with $\epsilon = 0.03$. The perturbation is normalized for visualization purposes.}
+	\label{fig:fgsm-example}
+\end{figure}
+The cosine distance of feature vectors before and after the attack for this example are:
+\begin{align}
+dist(\mathcal{F}(A),\,\mathcal{F}(T)) &= 0.6247 \\
+dist(\mathcal{F}(A + \delta),\,\mathcal{F}(T)) &= 0.5267
+\end{align}
+Already from just looking at this one example, we can see that the achieved reduction in the cosine distance after the attack is quite limited and is not enough to achieve a significant rank within the nearest neighbors of the target article. As seen in Table~\ref{tab:fgsm-results}, this first impression is confirmed when we evaluate the success rates achieved by \ac{FGSM} on a broader set of attack tuples for $\epsilon$ values ranging from 0.01 to 0.05.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ lccccc } 
+		\toprule		
+		& \multicolumn{5}{c}{Maximal Perturbation} \\
+		\cmidrule{2-6}
+		$rank_{min}$ & $\epsilon = 0.01$ & $\epsilon = 0.02$ & $\epsilon = 0.03$  & $\epsilon = 0.04$ & $\epsilon = 0.05$  \\
+		\midrule
+		1 & 0.12 & 0.07 & 0.06 & 0.02 & 0.01 \\
+		3 & 0.27 & 0.16 & 0.14 & 0.09 & 0.07 \\
+		10 & 0.64 & 0.44 & 0.32 & 0.18 & 0.13 \\
+		100 & 2.87 & 2.45 & 1.83 & 1.36 & 0.99 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Success rates (\%) calculated over 10,000 random attack tuples using \acs{FGSM}.}
+	\label{tab:fgsm-results}
+\end{table}
+The maximum success rate achieved using \ac{FGSM} for $rank_{min}=3$ in our experiments is 0.27\%, indicating that the one-step optimization step is not sufficient for successfully finding worst-case perturbations  that fulfill our adversary objective. The fact that the performance decreases with larger step sizes (higher $\epsilon$ values) reinforces this hypothesis.
+
+To further illustrate the effect that our evaluated attacks have on the cosine distances of attack tuples, we introduce a scatter plot with a fitted quantile regression of the cosine distances before and after each attack. This plot can help us better understand the strengths and weaknesses of our attacks and defenses. For a perfectly robust model, all points should be located on this plot's identity (green dashed line). On the other hand, a perfect attack should be able to push all points toward the x-axis of this plot, minimizing the distances of all attack tuples to values very close to 0.0. 
+\begin{figure}[H]
+	\centering
+	\input{images/scatter/normal-fgsm}
+	\caption{Quantile regression plot of 512 sampled cosine distances between target and attack article, before and after performing \acs{FGSM} attacks, using $\epsilon=0.05$}
+	\label{fig:fgsm-quantile}
+\end{figure}
+When attacking our undefended model using the \ac{FGSM} attack with $\epsilon=0.05$, we see a pretty mixed result in Figure~\ref{fig:fgsm-quantile}. While the attack reduced some distances, many other distances increased after the attack, indicating failed approximations of the actual loss surface. This plot confirms our previous findings, indicating that the \ac{FGSM} attack is unsuitable for our targeted adversary objective.
+
+\subsection{Projected Gradient Descent}
+For \acl{PGD} we use a step size of $\alpha=\frac{\epsilon}{k}$ where $k$ is the number of total iterations. In the following section, we assess the effectiveness of the iterative \acl{PGD} method using $k=(8, 16, 32, 64, 128)$ for optimizing our adversarial goal. An example attack tuple calculated using \ac{PGD} can be seen in Figure~\ref{fig:pgd-example}. 
+\begin{figure}[H]
+	\centering
+	\input{images/pgd}
+	\caption{Adversarial example, created using \acs{PGD} with $\epsilon = 0.03$ and $32$ iterations. The perturbation is normalized for visualization purposes.}
+	\label{fig:pgd-example}
+\end{figure}
+The cosine distance of feature vectors before and after the attack for this example are:
+\begin{align}
+dist(\mathcal{F}(A),\,\mathcal{F}(T)) &= 0.6247 \\
+dist(\mathcal{F}(A + \delta),\,\mathcal{F}(T))) &= 0.0500
+\end{align}
+Judging by this one example, we can already see that the achieved reduction in the cosine distance after the attack is significantly higher than in the case of \ac{FGSM} and is high enough to successfully rank on the first place among the nearest neighbors of the target article. The effect that a successful injection of this adversarial example into the product catalog would have on the resulting recommendations for the target article is shown in Figure~\ref{fig:pgd-reco}. As seen in Table~\ref{tab:pgd-results}, this first impression is confirmed once again when we evaluate the success rates achieved by \ac{PGD} with 64 iterations on a broader set of attack tuples for $\epsilon$ values ranging from 0.01 to 0.05.
+\begin{figure}[H]
+	\centering
+	\input{images/pgd-reco}
+	\caption{Ranked recommendation results for original \acs{k-NN} index (top) and manipulated index with injected \acs{PGD} adversarial example (bottom)}
+	\label{fig:pgd-reco}
+\end{figure}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ lccccc } 
+		\toprule		
+		& \multicolumn{5}{c}{Maximal Perturbation} \\
+		\cmidrule{2-6}
+		$rank_{min}$ & $\epsilon = 0.01$ & $\epsilon = 0.02$ & $\epsilon = 0.03$  & $\epsilon = 0.04$ & $\epsilon = 0.05$  \\
+		\midrule
+		1 & 36.44 & 77.81 & 86.81 & 89.65 & 91.02 \\
+		3 & 44.33 & 86.40 & 94.06 & 96.13 & 97.09 \\
+		10 & 50.21 & 89.61 & 95.90 & 97.56 & 98.22 \\
+		100 & 62.55 & 94.13 & 97.95 & 98.74 & 99.13 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Success rates (\%) calculated over 10,000 random attack tuples using \acs{PGD}-64.}
+	\label{tab:pgd-results}
+\end{table}
+The maximum success rate for $rank_{min}=3$ achieved using \ac{PGD} with 64 iterations in our experiments is 97.09\%, indicating that an iterative optimization approach, like \ac{PGD}, is significantly more effective at successfully finding worst-case perturbations that fulfill our adversary objective. These results are consistent with the scientific consensus that iterative optimization-based attacks are strictly stronger than single-step attacks and should achieve strictly superior performance in a white-box setting \parencite{athalye2018obfuscated}. When we look at the impact on the cosine distances in Figure~\ref{fig:pgd-quantile}, we see a drastic improvement compared to \ac{FGSM}. Almost all points were successfully pushed onto the x-axis. Nonetheless, there is still room for improvement, as the spread of points with higher initial distances increases significantly.
+\begin{figure}[H]
+	\centering
+	\input{images/scatter/normal-pgd-32}
+	\caption{Quantile regression plot of 512 sampled cosine distances between target and attack article, before and after performing \acs{PGD}-32 attacks, using $\epsilon=0.05$}
+	\label{fig:pgd-quantile}
+\end{figure}
+
+\subsection{Carlini \& Wagner Method}
+Finishing off with the strongest and most costly of our evaluated attacks, we implemented and tested the state-of-the-art \ac{CW} attack method for our adversary objective. Instead of maximizing for a misclassification, we replace the corresponding loss term with our distance metric defined in \ref{eq:adv-loss}. The original implementation uses an iterative search to find the smallest possible perturbation, that fulfills the adversary objective. However, since we do not care about finding the smallest perturbation and only care about staying within the defined $l_\infty$-norm constraints, we used a fixed value for $\tau=\epsilon$. Using the Adam optimizer with a learning rate of 0.005, we perform 1,000 optimization steps. An example attack tuple calculated using \ac{CW} can be seen in Figure~\ref{fig:cw-example}.
+\begin{figure}[H]
+	\centering
+	\input{images/cw}
+	\caption{Adversarial example, created using the \acs{CW} method with $\epsilon = 0.03$ and 1,000 iterations. The perturbation is normalized for visualization purposes.}
+	\label{fig:cw-example}
+\end{figure}
+Cosine distance of feature vectors before and after attack:
+\begin{align}
+dist(\mathcal{F}(A),\,\mathcal{F}(T)) &= 0.6247 \\
+dist(\mathcal{F}(A + \delta),\,\mathcal{F}(T)) &= 0.0049
+\end{align}
+Examining this one example, we can see that the achieved reduction in the cosine distance after the attack is even higher than in the case of \ac{PGD} and is therefore also high enough to successfully rank on the first place among the nearest neighbors of the target article, as seen in Figure~\ref{fig:cw-reco}. As seen in Table~\ref{tab:cw-results}, this first impression is confirmed once again when we evaluate the success rates achieved by \ac{CW} with 1,000 iterations on a broader set of attack tuples for $\epsilon$ values ranging from 0.01 to 0.05.
+\begin{figure}[H]
+	\centering
+	\input{images/cw-reco}
+	\caption{Ranked recommendation results for original \acs{k-NN} index (top) and manipulated index with injected \acs{CW} adversarial example (bottom)}
+	\label{fig:cw-reco}
+\end{figure}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ lccccc } 
+		\toprule		
+		& \multicolumn{5}{c}{Maximal Perturbation} \\
+		\cmidrule{2-6}
+		$rank_{min}$ & $\epsilon = 0.01$ & $\epsilon = 0.02$ & $\epsilon = 0.03$  & $\epsilon = 0.04$ & $\epsilon = 0.05$  \\
+		\midrule
+		1 & 74.60 & 94.10 & 96.40 & 97.60 & 97.80 \\
+		3 & 83.10 & 98.10 & 99.40 & 99.70 & 99.70 \\
+		10 & 86.60 & 98.40 & 99.50 & 99.90 & 99.90 \\
+		100 & 91.30 & 99.40 & 99.90 & 100.00 & 100.00 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Success rates (\%) calculated over 1,000 random attack tuples using \acs{CW}-1000.}
+	\label{tab:cw-results}
+\end{table}
+The maximum success rate for $rank_{min}=3$ achieved using \ac{CW} with 1,000 iterations in our experiments is 99.70\%, indicating that the more sophisticated approach of \ac{CW}, is indeed most effective at successfully finding worst-case perturbations that fulfill our adversary objective. When we look at the impact on the cosine distances in Figure~\ref{fig:cw-quantile}, we see a nearly perfect result. The vast majority of  points were successfully pushed onto the x-axis. Additionally, the spread of points along the y-axis is significantly narrower than in the case of \ac{PGD}, indicating a stronger and more reliable attack.
+\begin{figure}[H]
+	\centering
+	\input{images/scatter/normal-cw-1000}
+	\caption{Quantile regression plot of 512 sampled cosine distances between target and attack article, before and after performing \acs{CW}-1000 attacks, using $\epsilon=0.05$}
+	\label{fig:cw-quantile}
+\end{figure}
+\subsection{Comparison}
+Finally, we want to compare the achieved results of all evaluated attack methods. An overview of the different attack success rates for a minimum target rank of 3 or lower is shown in Table~\ref{tab:attack-results} and Figure~\ref{fig:top3-normal-success}.  Looking at the results, \ac{PGD} and \ac{CW} achieve remarkably high success rates going up to 99.70\%. \ac{FGSM}, on the other hand, achieved insufficient results and was not able to achieve our adversary objective. When attacking an undefended model, the performance increase of \ac{CW}-1000 compared to \ac{PGD}-128 is relatively small and arguably not worth the extra computational cost (approx. $\times 7.5$), which the significantly more complex attack method requires. Therefore we consider \ac{PGD}-128 as the best trade-off between attack strength and computational cost.
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ lccccc } 
+		\toprule		
+		& \multicolumn{5}{c}{Maximal Perturbation} \\
+		\cmidrule{2-6}
+		Attack & $\epsilon = 0.01$ & $\epsilon = 0.02$ & $\epsilon = 0.03$  & $\epsilon = 0.04$ & $\epsilon = 0.05$  \\
+		\midrule
+		FGSM & 0.27 & 0.16 & 0.14 & 0.09 & 0.07 \\
+		PGD-8 & 22.19 & 36.40 & 35.60 & 32.41 & 27.95 \\
+		PGD-16 & 33.36 & 64.28 & 72.95 & 74.06 & 72.69 \\
+		PGD-32 & 40.93 & 78.95 & 88.85 & 91.80 & 92.78 \\
+		PGD-64 & 44.33 & 86.40 & 94.06 & 96.13 & 97.09 \\
+		PGD-128 & 45.92 & 89.79 & 96.33 & 97.69 & 98.32 \\
+		CW-1000 & 83.10 & 98.10 & 99.40 & 99.70 & 99.70 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Success rates (\%) for $rank_{min}=3$, calculated over 10,000 random article tuples (1,000 in the case of \acs{CW}) for all evaluated attacks and $\epsilon$ values.}
+	\label{tab:attack-results}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\input{images/top3-normal-success}
+	\caption{Success rates (\%) for $rank_{min}=3$, calculated over 10,000 random article tuples (1,000 in the case of \acs{CW}) for all evaluated attacks and $\epsilon$ values.}
+	\label{fig:top3-normal-success}
+\end{figure}
+
+\subsection{Classifier Impact}
+An interesting observation we made during our experiments, is that the performed attacks on the cosine distance of image embeddings also indirectly attack the classifier, which was initially trained in Chapter~\ref{chp:model}. By minimizing the cosine distance between two articles, the predictions of the classifier for these articles also become more similar, as seen in Figure~\ref{fig:classifier-attack}.
+\begin{figure}
+	\centering
+	\subfloat[][Target image with ground-truth labels: $category = Sweater$, $texture = stripe$.]{
+		\includegraphics[width=0.25\textwidth]{images/adv/target}
+	}\hspace{0.5cm}
+	\subfloat[][Original image with ground-truth labels: $category = Shorts$, $texture = linen$.]{
+		\includegraphics[width=0.25\textwidth]{images/adv/original}
+	}\hspace{0.5cm}
+	\subfloat[][Adversarial image, created using \ac{PGD} with 32 iterations and $\epsilon=0.03$.]{					
+		\includegraphics[width=0.25\textwidth]{images/adv/normal-24-epochs/pgd/0.03/attack}
+	}\\
+	\subfloat[][Classifier predictions for category and texture of target image.]{
+		\input{images/target-classifier}
+	}\\
+	\subfloat[][Classifier predictions for category and texture of original image.]{
+		\input{images/original-classifier}
+	}\\
+	\subfloat[][Classifier predictions for category and texture of adversarial image.]{
+		\input{images/pgd-classifier}
+	}
+	\caption{\acs{k-NN} attacks indirectly attack classifier.}
+	\label{fig:classifier-attack}
+\end{figure}

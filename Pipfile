@@ -1,0 +1,31 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+yapf = "*"
+flake8 = "*"
+rope = "*"
+
+[packages]
+jupyterlab = "*"
+pandas = "*"
+scipy = "*"
+sklearn = "*"
+torch = "==1.5.0"
+torchvision = "==0.6.0"
+tensorboard = "*"
+tqdm = "*"
+ipywidgets = "*"
+nmslib = "*"
+seaborn = "*"
+matplotlib = "*"
+tikzplotlib = "*"
+imagededup = "*"
+statsmodels = "*"
+gdown = "*"
+
+[requires]
+python_version = "3.7"

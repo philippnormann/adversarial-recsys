@@ -1,0 +1,34 @@
+\begin{tikzpicture}
+
+
+\node [rectangle, inner sep=0.5pt, color1, draw, thick] (query) {\includegraphics[width=3cm] {../thesis/images/adv/target}};
+\node [above=of query, yshift=-1cm, color1, font=\small] {\textbf{Query} image};
+
+
+\node [right=of query.north east, rectangle, inner sep=0.5pt, color2, draw, thick] (orig1) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Mixed_Media_Knit_Tee/img_00000046.jpg}};
+\node [above=of orig1, yshift=-1cm, color2, font=\small] {$dist = 0.0596$};
+
+\node [right=0.5cm of orig1, rectangle, inner sep=0.5pt, color2, draw, thick] (orig2) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Striped_Boat_neck_Tee/img_00000088.jpg}};
+\node [above=of orig2, yshift=-1cm, color2, font=\small] {$dist = 0.0615$};
+
+\node [right=0.5cm of orig2, rectangle, inner sep=0.5pt, color2, draw, thick] (orig3) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Boat_Neck_Striped_Top/img_00000013.jpg}};
+\node [above=of orig3, yshift=-1cm, color2, font=\small] {$dist = 0.0656$};
+
+\node [right=0.5cm of orig3, rectangle, inner sep=0.5pt, color2, draw, thick] (orig4) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Nautical-Striped_Cotton_Tee/img_00000042.jpg}};
+\node [above=of orig4, yshift=-1cm, color2, font=\small] {$dist = 0.0660$};
+
+
+\node [right=of query.south east, rectangle, inner sep=0.5pt, color3, draw, thick] (adv1) {\includegraphics[width=2cm] {../thesis/images/adv/normal-24-epochs/cw/0.03/attack}};
+\node [above=of adv1, yshift=-1cm, color3, font=\small] {$dist = 0.0049$};
+
+\node [right=0.5cm of adv1, rectangle, inner sep=0.5pt, color3, draw, thick] (adv2) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Mixed_Media_Knit_Tee/img_00000046.jpg}};
+\node [above=of adv2, yshift=-1cm, color3, font=\small] {$dist = 0.0596$};
+
+\node [right=0.5cm of adv2, rectangle, inner sep=0.5pt, color3, draw, thick] (adv3) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Striped_Boat_neck_Tee/img_00000088.jpg}};
+\node [above=of adv3, yshift=-1cm, color3, font=\small] {$dist = 0.0615$};
+
+\node [right=0.5cm of adv3, rectangle, inner sep=0.5pt, color3, draw, thick] (adv4) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Boat_Neck_Striped_Top/img_00000013.jpg}};
+\node [above=of adv4, yshift=-1cm, color3, font=\small] {$dist = 0.0656$};
+
+
+\end{tikzpicture}

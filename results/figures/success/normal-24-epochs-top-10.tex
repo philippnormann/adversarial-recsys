@@ -1,0 +1,266 @@
+% This file was created by tikzplotlib v0.9.3.
+\begin{tikzpicture}
+
+\definecolor{color0}{rgb}{0.917647058823529,0.917647058823529,0.949019607843137}
+\definecolor{color1}{rgb}{0.916118471592631,0.587423760636183,0.640263770354658}
+\definecolor{color2}{rgb}{0.761932343861879,0.602524817229626,0.29239128864167}
+\definecolor{color3}{rgb}{0.531977299570092,0.653932867339067,0.275419601514511}
+\definecolor{color4}{rgb}{0.289388368632853,0.678978856556939,0.561244957348417}
+\definecolor{color5}{rgb}{0.307108018655975,0.671626456963976,0.723521305871116}
+\definecolor{color6}{rgb}{0.626885214598887,0.677767791860435,0.916300649166299}
+\definecolor{color7}{rgb}{0.90409992612099,0.540448897448067,0.880107767162344}
+
+\begin{axis}[
+axis background/.style={fill=color0},
+axis line style={white},
+legend cell align={left},
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, at={(0.03,0.97)}, anchor=north west, draw=none, fill=color0},
+tick align=outside,
+tick pos=left,
+title={Top-10 rank attack success rates for normal-24-epochs},
+x grid style={white},
+xlabel={epsilon},
+xmin=-0.5, xmax=4.5,
+xtick style={color=white!15!black},
+xtick={0,1,2,3,4},
+xticklabels={0.01,0.02,0.03,0.04,0.05},
+y grid style={white},
+ylabel={success},
+ymajorgrids,
+ymin=0, ymax=104.895,
+ytick style={color=white!15!black}
+]
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:-0.4,0) rectangle (axis cs:-0.285714285714286,0.64);
+\addlegendimage{ybar,ybar legend,draw=none,fill=color1,line width=0.12pt};
+\addlegendentry{fgsm}
+
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:0.6,0) rectangle (axis cs:0.714285714285714,0.44);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:1.6,0) rectangle (axis cs:1.71428571428571,0.32);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:2.6,0) rectangle (axis cs:2.71428571428571,0.18);
+\draw[draw=none,fill=color1,line width=0.12pt] (axis cs:3.6,0) rectangle (axis cs:3.71428571428571,0.13);
+\draw[draw=none,fill=color2,line width=0.12pt] (axis cs:-0.285714285714286,0) rectangle (axis cs:-0.171428571428571,29.45);
+\addlegendimage{ybar,ybar legend,draw=none,fill=color2,line width=0.12pt};
+\addlegendentry{pgd-8}
+
+\draw[draw=none,fill=color2,line width=0.12pt] (axis cs:0.714285714285714,0) rectangle (axis cs:0.828571428571429,47.78);
+\draw[draw=none,fill=color2,line width=0.12pt] (axis cs:1.71428571428571,0) rectangle (axis cs:1.82857142857143,48.11);
+\draw[draw=none,fill=color2,line width=0.12pt] (axis cs:2.71428571428571,0) rectangle (axis cs:2.82857142857143,45.43);
+\draw[draw=none,fill=color2,line width=0.12pt] (axis cs:3.71428571428571,0) rectangle (axis cs:3.82857142857143,40.69);
+\draw[draw=none,fill=color3,line width=0.12pt] (axis cs:-0.171428571428571,0) rectangle (axis cs:-0.0571428571428571,40.75);
+\addlegendimage{ybar,ybar legend,draw=none,fill=color3,line width=0.12pt};
+\addlegendentry{pgd-16}
+
+\draw[draw=none,fill=color3,line width=0.12pt] (axis cs:0.828571428571429,0) rectangle (axis cs:0.942857142857143,73.47);
+\draw[draw=none,fill=color3,line width=0.12pt] (axis cs:1.82857142857143,0) rectangle (axis cs:1.94285714285714,81.86);
+\draw[draw=none,fill=color3,line width=0.12pt] (axis cs:2.82857142857143,0) rectangle (axis cs:2.94285714285714,83);
+\draw[draw=none,fill=color3,line width=0.12pt] (axis cs:3.82857142857143,0) rectangle (axis cs:3.94285714285714,82.37);
+\draw[draw=none,fill=color4,line width=0.12pt] (axis cs:-0.0571428571428571,0) rectangle (axis cs:0.0571428571428571,47.19);
+\addlegendimage{ybar,ybar legend,draw=none,fill=color4,line width=0.12pt};
+\addlegendentry{pgd-32}
+
+\draw[draw=none,fill=color4,line width=0.12pt] (axis cs:0.942857142857143,0) rectangle (axis cs:1.05714285714286,84.82);
+\draw[draw=none,fill=color4,line width=0.12pt] (axis cs:1.94285714285714,0) rectangle (axis cs:2.05714285714286,92.32);
+\draw[draw=none,fill=color4,line width=0.12pt] (axis cs:2.94285714285714,0) rectangle (axis cs:3.05714285714286,94.85);
+\draw[draw=none,fill=color4,line width=0.12pt] (axis cs:3.94285714285714,0) rectangle (axis cs:4.05714285714286,95.55);
+\draw[draw=none,fill=color5,line width=0.12pt] (axis cs:0.0571428571428571,0) rectangle (axis cs:0.171428571428571,50.21);
+\addlegendimage{ybar,ybar legend,draw=none,fill=color5,line width=0.12pt};
+\addlegendentry{pgd-64}
+
+\draw[draw=none,fill=color5,line width=0.12pt] (axis cs:1.05714285714286,0) rectangle (axis cs:1.17142857142857,89.61);
+\draw[draw=none,fill=color5,line width=0.12pt] (axis cs:2.05714285714286,0) rectangle (axis cs:2.17142857142857,95.9);
+\draw[draw=none,fill=color5,line width=0.12pt] (axis cs:3.05714285714286,0) rectangle (axis cs:3.17142857142857,97.56);
+\draw[draw=none,fill=color5,line width=0.12pt] (axis cs:4.05714285714286,0) rectangle (axis cs:4.17142857142857,98.22);
+\draw[draw=none,fill=color6,line width=0.12pt] (axis cs:0.171428571428571,0) rectangle (axis cs:0.285714285714286,51.87);
+\addlegendimage{ybar,ybar legend,draw=none,fill=color6,line width=0.12pt};
+\addlegendentry{pgd-128}
+
+\draw[draw=none,fill=color6,line width=0.12pt] (axis cs:1.17142857142857,0) rectangle (axis cs:1.28571428571429,91.9);
+\draw[draw=none,fill=color6,line width=0.12pt] (axis cs:2.17142857142857,0) rectangle (axis cs:2.28571428571429,97.33);
+\draw[draw=none,fill=color6,line width=0.12pt] (axis cs:3.17142857142857,0) rectangle (axis cs:3.28571428571429,98.3);
+\draw[draw=none,fill=color6,line width=0.12pt] (axis cs:4.17142857142857,0) rectangle (axis cs:4.28571428571429,98.77);
+\draw[draw=none,fill=color7,line width=0.12pt] (axis cs:0.285714285714286,0) rectangle (axis cs:0.4,86.6);
+\addlegendimage{ybar,ybar legend,draw=none,fill=color7,line width=0.12pt};
+\addlegendentry{cw-1000}
+
+\draw[draw=none,fill=color7,line width=0.12pt] (axis cs:1.28571428571429,0) rectangle (axis cs:1.4,98.4);
+\draw[draw=none,fill=color7,line width=0.12pt] (axis cs:2.28571428571429,0) rectangle (axis cs:2.4,99.5);
+\draw[draw=none,fill=color7,line width=0.12pt] (axis cs:3.28571428571429,0) rectangle (axis cs:3.4,99.9);
+\draw[draw=none,fill=color7,line width=0.12pt] (axis cs:4.28571428571429,0) rectangle (axis cs:4.4,99.9);
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+-0.342857142857143 nan
+-0.342857142857143 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+0.657142857142857 nan
+0.657142857142857 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+1.65714285714286 nan
+1.65714285714286 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+2.65714285714286 nan
+2.65714285714286 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+3.65714285714286 nan
+3.65714285714286 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+-0.228571428571429 nan
+-0.228571428571429 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+0.771428571428571 nan
+0.771428571428571 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+1.77142857142857 nan
+1.77142857142857 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+2.77142857142857 nan
+2.77142857142857 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+3.77142857142857 nan
+3.77142857142857 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+-0.114285714285714 nan
+-0.114285714285714 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+0.885714285714286 nan
+0.885714285714286 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+1.88571428571429 nan
+1.88571428571429 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+2.88571428571429 nan
+2.88571428571429 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+3.88571428571429 nan
+3.88571428571429 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+0 nan
+0 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+1 nan
+1 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+2 nan
+2 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+3 nan
+3 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+4 nan
+4 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+0.114285714285714 nan
+0.114285714285714 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+1.11428571428571 nan
+1.11428571428571 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+2.11428571428571 nan
+2.11428571428571 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+3.11428571428571 nan
+3.11428571428571 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+4.11428571428571 nan
+4.11428571428571 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+0.228571428571429 nan
+0.228571428571429 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+1.22857142857143 nan
+1.22857142857143 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+2.22857142857143 nan
+2.22857142857143 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+3.22857142857143 nan
+3.22857142857143 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+4.22857142857143 nan
+4.22857142857143 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+0.342857142857143 nan
+0.342857142857143 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+1.34285714285714 nan
+1.34285714285714 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+2.34285714285714 nan
+2.34285714285714 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+3.34285714285714 nan
+3.34285714285714 nan
+};
+\addplot [line width=1.26pt, white!26!black, forget plot]
+table {%
+4.34285714285714 nan
+4.34285714285714 nan
+};
+\end{axis}
+
+\end{tikzpicture}

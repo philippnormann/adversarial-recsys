@@ -1,0 +1,194 @@
+\chapter{Defenses}
+\label{chp:defenses}
+In the previous chapter, we successfully performed several targeted item-to-item attacks that allow an attacker to promote their items by adding almost imperceptible perturbations to product images. These findings raise a fundamental question:
+\begin{center}
+	\textit{How can we defend our recommendation system against adversarial inputs?}
+\end{center} 
+There is now a sizable body of work proposing various defense mechanisms against adversarial examples. Even though researchers have published many different defense techniques, the research area is still relatively young \parencite{szegedy2013intriguing}, and new studies frequently circumvent a lot of published defenses. A prominent example of such a study was published by \cite{athalye2018obfuscated}. They evaluated nine non-certified white-box-secure defenses published at the ICLR 2018 conference and identified obfuscated gradients, a phenomenon that leads to a false sense of security in defenses against adversarial examples. Out of the nine evaluated defenses, they circumvented six completely, and one partially. Two defenses were considered useful, and are both based on the idea of \ac{AT}. Hence we also based our experiments on defenses belonging to this class. We evaluate using these defense techniques to train our \ac{CNN} feature extractor in the following sections and show the impact these defenses have on our proposed attacks against our \ac{k-NN} recommendation system. 
+
+\section{Adversarial Training}
+Starting with vanilla adversarial training, we study the approach of \cite{madry2017towards}. During the adversarial training procedure, we instantiate the attack used of our \ac{CNN} feature extractor with \ac{PGD} using eight iterations and restricting $l_\infty$ perturbations to $\epsilon=0.03$. In contrast to our item-to-item attacks performed in Chapter~\ref{chp:attacks}, our adversary objective during adversarial training, is to increase the likelihood of misclassification for the category, and texture attributes. We perform the adversarial training for 24 epochs, as we did for our regular classifier. 
+
+Looking at the evaluation metrics for our classifier in Table~\ref{tab:adv-classifier-results}, we can see that, as expected, our performed attacks reduced our regular classifier performance drastically, while our adversarially trained classifier was able to learn a more robust decision boundary.  This increase in robustness is traded in for a decrease in accuracy on clean images. In our case, the accuracy for the adversarially trained model in predicting the correct garment category dropped by 12.19\% on clean images, while we gained 48.69\% for the same task on adversarial images. Similar results can be seen for the multi-class task of texture classification. This trade-off is well-known and has been attributed to the fundamental conflict between the goal of adversarial robustness and that of standard generalization \parencite{tsipras2018robustness}.
+\begin{table}[H]
+	\centering
+	\subfloat[][Category classification results.]{
+		\label{tab:adv-category-results}
+		\begin{tabular}{ lccc } 
+			\toprule		
+			Category        	 & Adversarial & Regular & $\Delta$\\
+			\midrule
+			Clean Accuracy	     & 56.06 & 68.25 & $-$ 12.19 \\
+			Adversarial Accuracy & 48.71 & 0.02  & $+$ 48.69  \\
+			\bottomrule
+		\end{tabular}
+	}
+	\hfill
+	\subfloat[][Texture classification results.]{
+		\label{tab:adv-texture-results}
+		\begin{tabular}{ lccc } 
+			\toprule		
+			Texture          			& Adversarial & Regular & $\Delta$ \\
+			\midrule
+			Clean Top-1 Precision       & 39.58 & 43.68 & $-$ 4.10 \\
+			Adversarial Top-1 Precision & 38.60 & 19.51 & $+$ 19.09 \\
+			\bottomrule
+		\end{tabular}
+	}
+	\caption{Comparison of our evaluation results on a clean and adversarial test set for a adversarially trained and regular classifier. The adversarial test set was generated using the \ac{PGD} attack method with eight iterations and $\epsilon=0.03$.}
+	\label{tab:adv-classifier-results}
+\end{table}
+Since we are interested in evaluating if this kind of training procedure can help us mitigate the attacks on our \ac{k-NN} recommendation system, we evaluate the success rates of our previously proposed attacks against our adversarially trained feature extractor. To get a first impression, we try to reproduce our targeted attacks on the same attack tuple that we used to demonstrate our attacks in the previous chapter. With relatively low epsilon values up to 0.05, which were enough to reach 99.70\% attack success rate for our undefended model, as seen in Table~\ref{tab:attack-results}, we fail to achieve a significant rank with our adversarial examples. Even with unrealistically high epsilon values like 0.3, we still fail to rank under the ten nearest neighbors, as seen in Figure~\ref{fig:adv-reco}. Interestingly, for the adversarially trained model, the adversarial images with high epsilon values start to show relevant features of the target image. For example, in Figure~\ref{fig:epsilon-adv}, the stripes of the striped sweater start to appear in the adversarial image. This phenomenon does not occur for our regular model and might indicate that our adversarially trained model learned more relevant features, which help it defend against unrealistic manipulations of the input. 
+\begin{figure}[H]
+	\centering
+	\input{images/adv-reco}
+	\caption{A recommendation result of our adversarially trained model after a targeted attack. The  adversarial example generated using the \ac{CW} method for $\epsilon=0.3$, which we injected into the product catalog ranks on place 39 and is therefore not visible in the nearest neighbors displayed above.}
+	\label{fig:adv-reco}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\subfloat[][$\epsilon=0.01$]{
+		\includegraphics[height=0.18\textwidth]{images/adv/adversarial-24-epochs/cw/0.01/attack}
+	}
+	\subfloat[][$\epsilon=0.05$]{
+		\includegraphics[height=0.18\textwidth]{images/adv/adversarial-24-epochs/cw/0.05/attack}
+	}
+	\subfloat[][$\epsilon=0.1$]{
+		\includegraphics[height=0.18\textwidth]{images/adv/adversarial-24-epochs/cw/0.1/attack}
+	}
+	\subfloat[][$\epsilon=0.2$]{
+		\includegraphics[height=0.18\textwidth]{images/adv/adversarial-24-epochs/cw/0.2/attack}
+	}
+	\subfloat[][$\epsilon=0.3$]{
+		\includegraphics[height=0.18\textwidth]{images/adv/adversarial-24-epochs/cw/0.3/attack}
+	}
+	\caption{Adversarial examples generated using \acs{CW}-1000 for our adversarially trained recommendation system with increasing $\epsilon$ values ranging from 0.01 to 0.3. The target item for the attack is the same striped sweater as in Chapter~\ref{chp:attacks}.}
+	\label{fig:epsilon-adv}
+\end{figure}
+The first impression of the robustness characteristics regarding our proposed attacks is confirmed, when we look at the empirical evaluation results over a broader set of article tuples in Table~\ref{tab:adv-training-results} and Figure~\ref{fig:top3-adv-success}. Using adversarial training, we were able to reduce the attack success rate for a perturbation budget of $\epsilon=0.05$ from 99.70\% to a mere 0.30\%. When we look at higher and more noticeable perturbation budgets $\epsilon\ge0.1$, the success rates start to increase slowly. The \ac{CW} method once again strongly outperforms all other tested methods, demonstrating its superior effectiveness at navigating the loss surface of adversarial examples. We conclude that the achieved reduction in success rates for realistic $\epsilon$ values $\le$ 0.05, makes successful attacks impractical, as users would likely notice the manipulation for higher $\epsilon$ values and the degradation in image quality reaches unacceptable levels.
+
+Inspecting the impact of \ac{AT} on cosine distances, before and after \ac{CW} attacks, in Figure~\ref{fig:adv-quantile}, we observe a reassuring pattern. The majority of the points are very close to the plot's identity or have only been reduced by a constant amount, indicating that \ac{AT} can indeed be considered an efficient defense mechanism for our use-case.
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ lccccc } 
+		\toprule		
+		& \multicolumn{5}{c}{Maximal Perturbation} \\
+		\cmidrule{2-6}
+		Attack & $\epsilon = 0.01$ & $\epsilon = 0.05$ & $\epsilon = 0.1$  & $\epsilon = 0.2$ & $\epsilon = 0.3$  \\
+		\midrule
+		FGSM & 0.01 & 0.03 & 0.02 & 0.02 & 0.00 \\
+		PGD-8 & 0.01 & 0.07 & 0.42 & 3.18 & 6.91 \\
+		PGD-16 & 0.01 & 0.07 & 0.48 & 4.33 & 12.04 \\
+		PGD-32 & 0.01 & 0.07 & 0.48 & 5.12 & 15.43 \\
+		PGD-64 & 0.01 & 0.07 & 0.50 & 5.45 & 16.97 \\
+		PGD-128 & 0.01 & 0.07 & 0.53 & 5.61 & 17.68 \\
+		CW-1000 & 0.00 & 0.30 & 1.80 & 23.10 & 48.00 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Attack success rates for $rank_{min}=3$, targeting an adversarially trained model, calculated over 10,000 random article tuples (1,000 in the case of \acs{CW}) for all evaluated attacks and various $\epsilon$ values.}
+	\label{tab:adv-training-results}
+\end{table}
+\begin{figure}[H]
+	\centering
+	\input{images/top3-adv-success}
+	\caption{Attack success rates for $rank_{min}=3$, targeting an adversarially trained model, calculated over 10,000 random article tuples (1,000 in the case of \acs{CW}) for all evaluated attacks and various $\epsilon$ values.}
+	\label{fig:top3-adv-success}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\input{images/scatter/adv-cw-1000}
+	\caption{Quantile regression plot of 512 sampled cosine distances between target and attack article, before and after performing \acs{CW}-1000 attacks targeting an adversarially trained model, using $\epsilon=0.05$.}
+	\label{fig:adv-quantile}
+\end{figure}
+
+\section{Curriculum Adversarial Training}
+Another defense from the class of \ac{AT} defenses we evaluated is called \ac{CAT} and was first published by \cite{cai2018curriculum}. Using a curriculum of adversarial examples generated by attacks with a wide range of strengths, this approach is supposed to increase accuracy on clean and adversarial inputs for more complex tasks. We implemented and evaluated this approach, including its batch mixing optimization by training a model using \ac{PGD} attacks with iterations up to $k=8$, restricting $l_\infty$ perturbations to $\epsilon=0.03$. The evaluation results for this classifier can be seen in \ref{tab:curr-adv-classifier-results}.
+\begin{table}[H]
+	\centering
+	\subfloat[][Category classification results.]{
+		\label{tab:curr-adv-category-results}
+		\begin{tabular}{ lccc } 
+			\toprule		
+			Category        & Curriculum & Regular & $\Delta$\\
+			\midrule
+			Clean Accuracy	      & 62.29 & 68.25 & $-$ 5.96 \\
+			Adversarial Accuracy  & 27.45 & 0.02  & $+$ 27.43 \\
+			\bottomrule
+		\end{tabular}
+	}
+	\hfill
+	\subfloat[][Texture classification results.]{
+		\label{tab:curr-adv-texture-results}
+		\begin{tabular}{ lccc } 
+			\toprule		
+			Texture          & Curriculum & Regular & $\Delta$ \\
+			\midrule
+			Clean Top-1 Precision        & 39.57 & 43.68 & $-$ 4.11 \\
+			Adversarial Top-1 Precision  & 36.04 & 19.51 & $+$ 16.53 \\
+			\bottomrule
+		\end{tabular}
+	}
+	\caption{Comparison of our evaluation results on a clean and adversarial test set for a classifier trained using curriculum adversarial training and a regular classifier. The adversarial test set was generated using the \ac{PGD}-8 with $\epsilon=0.03$}
+	\label{tab:curr-adv-classifier-results}
+\end{table}
+Looking at the results achieved by \ac{CAT}, we observe a significant performance increase on clean data compared to traditional adversarial learning. However, this increase in performance on clean data comes at the cost of decreased robustness against adversarial examples. This lack of robustness becomes visible when we try to attack this model using our targeted item-to-item attack on our example attack tuple, as shown in Figure~\ref{fig:curr-adv-reco}.
+\begin{figure}[H]
+	\centering
+	\input{images/curr-adv-reco}
+	\caption{A recommendation result of our \ac{CAT} model after a targeted attack. The adversarial example generated using the \ac{CW} method for $\epsilon=0.2$, which we injected into the product catalog, ranks first among the target's neighbors.}
+	\label{fig:curr-adv-reco}
+\end{figure}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ lccccc } 
+		\toprule		
+		& \multicolumn{5}{c}{Maximal Perturbation} \\
+		\cmidrule{2-6}
+		Attack & $\epsilon = 0.01$ & $\epsilon = 0.05$ & $\epsilon = 0.1$  & $\epsilon = 0.2$ & $\epsilon = 0.3$  \\
+		\midrule
+		FGSM & 0.02 & 0.00 & 0.01 & 0.00 & 0.00 \\
+		PGD-8 & 0.05 & 0.32 & 1.45 & 5.19 & 17.93 \\
+		PGD-16 & 0.36 & 0.75 & 3.75 & 13.13 & 23.57 \\
+		PGD-32 & 1.08 & 2.26 & 8.01 & 24.92 & 42.13 \\
+		PGD-64 & 2.13 & 7.53 & 15.78 & 39.95 & 57.83 \\
+		PGD-128 & 2.96 & 14.86 & 28.63 & 55.52 & 71.71 \\
+		CW-1000 & 3.20 & 32.80 & 81.80 & 97.40 & 99.50 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Attack success rates for $rank_{min}=3$ calculated over 10,000 random article tuples (1,000 in the case of \acs{CW}) for all evaluated attacks and various $\epsilon$ values.}
+	\label{tab:curriculum-adv-training-results}
+\end{table}
+Examining the results of our empirical evaluation over a broader set of article tuples in Table~\ref{tab:curriculum-adv-training-results} and Figure~\ref{fig:top3-curriculum-adv-success}, our first impression is confirmed. Within a realistic perturbation budget of $\epsilon\le0.05$, the worst-case success probability reaches 32.80\%, which we achieved using the \ac{CW} method with 1,000 iterations. As the $\epsilon$ budget rises, the success rates reach levels well above 90\% topping off at a 99.50\% success rate for \ac{CW} and $\epsilon=0.3$. 
+\begin{figure}[H]
+	\centering
+	\input{images/top3-curriculum-adv-success}
+	\caption{Attack success rates for $rank_{min}=3$ calculated over 10,000 random article tuples (1,000 in the case of \acs{CW}) for all evaluated attacks and various $\epsilon$ values.}
+	\label{fig:top3-curriculum-adv-success}
+\end{figure}
+Inspecting the impact of \ac{CAT} on cosine distances, before and after \ac{CW} attacks, in Figure~\ref{fig:curr-adv-quantile}, we observe a mediocre result. All points are located well below the plot's identity, but the reduction in distances is not bound to a constant like it was for traditional \ac{AT}. Overall we can conclude that \ac{CAT} achieved a balance between accuracy and robustness somewhere between regular training and traditional \ac{AT}.
+\begin{figure}[H]
+	\centering
+	\input{images/scatter/curriculum-adv-cw-1000}
+	\caption{Quantile regression plot of 512 sampled cosine distances between target and attack article, before and after performing \acs{CW}-1000 attacks, using $\epsilon=0.05$.}
+	\label{fig:curr-adv-quantile}
+\end{figure}
+
+\section{Comparison}
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{ lccc } 
+		\toprule		
+		& \multicolumn{3}{c}{Attack} \\
+		\cmidrule{2-4}
+		Defense & FGSM & PGD-128 & CW-1000 \\
+		\midrule
+		Unsecured  						& 0.07  & 98.32 & 99.70 \\
+		Adversarial Training			& 0.03  & 0.07  & 0.30 \\
+		Curriculum Adversarial Training & 0.00  & 14.89 & 32.80 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Attack success rates for $rank_{min}=3$ calculated over 10,000 random article tuples (1,000 in the case of \acs{CW}) for all evaluated models and $\epsilon=0.05$.}
+	\label{tab:defense-results}
+\end{table}
+Finally, we want to compare our achieved results between the two evaluated defense methods. Table~\ref{tab:defense-results} shows the robustness of our trained models against the targeted item-to-item attacks, performed in Chapter~\ref{chp:attacks}. We observed that using traditional \ac{AT}, we were able to significantly reduce the success rate for realistic perturbation budgets of $\epsilon\le0.05$. This result demonstrates that using adversarial examples for the training of a \ac{CNN} feature extractor can effectively increase the robustness of the model against adversarial attacks targeting the hidden feature space. Although \ac{CAT} also achieved to increase robustness in comparison to an undefended model, the increase is far lower than in the case of traditional \ac{AT}. We should note that all measured robustness metrics only indicate robustness against the type of attacks and $ \epsilon $-boundaries we tested in our experiments and are no proof for universal robustness against other unknown attacks.

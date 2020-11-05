@@ -1,0 +1,35 @@
+\begin{tikzpicture}
+
+\node [rectangle, inner sep=0.5pt, color1, draw, thick] (query1) {\includegraphics[width=2.25cm] {../../data/DeepFashion/img_resized/Stripe_V-Neck_Tee/img_00000080.jpg}};
+\node [above=of query1, yshift=-1cm, color1, font=\small] {\textbf{Query} image};
+
+
+\node [right=of query1, rectangle, inner sep=0.5pt, color2, draw, thick] (orig1) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Classic_Striped_Tee/img_00000055.jpg}};
+\node [above=of orig1, yshift=-1cm, color2, font=\small] {$dist = 0.0141$};
+
+\node [right=0.5cm of orig1, rectangle, inner sep=0.5pt, color2, draw, thick] (orig2) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Micro-Stripe_Pocket_Tee/img_00000017.jpg}};
+\node [above=of orig2, yshift=-1cm, color2, font=\small] {$dist = 0.0181$};
+
+\node [right=0.5cm of orig2, rectangle, inner sep=0.5pt, color2, draw, thick] (orig3) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Striped_Crew_Neck_Tee/img_00000017.jpg}};
+\node [above=of orig3, yshift=-1cm, color2, font=\small] {$dist = 0.0197$};
+
+\node [right=0.5cm of orig3, rectangle, inner sep=0.5pt, color2, draw, thick] (orig4) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Colorblock-Paneled_Tee/img_00000047.jpg}};
+\node [above=of orig4, yshift=-1cm, color2, font=\small] {$dist = 0.0293$};
+
+
+\node [below=of query1, rectangle, inner sep=0.5pt, color1, draw, thick] (query2) {\includegraphics[width=2.25cm] {../../data/DeepFashion/img_resized/Rose_Print_Scuba_Knit_Dress/img_00000008.jpg}};
+\node [above=of query2, yshift=-1cm, color1, font=\small] {\textbf{Query} image};
+
+\node [right=of query2, rectangle, inner sep=0.5pt, color2, draw, thick] (adv1) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Ornate_Print_Open-Shoulder_Dress/img_00000010.jpg}};
+\node [above=of adv1, yshift=-1cm, color2, font=\small] {$dist = 0.0129$};
+
+\node [right=0.5cm of adv1, rectangle, inner sep=0.5pt, color2, draw, thick] (adv2) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Lace-Trimmed_Floral_Cami_Dress/img_00000017.jpg}};
+\node [above=of adv2, yshift=-1cm, color2, font=\small] {$dist = 0.0130$};
+
+\node [right=0.5cm of adv2, rectangle, inner sep=0.5pt, color2, draw, thick] (adv3) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Strapless_X-Ray_Roses_Dress/img_00000002.jpg}};
+\node [above=of adv3, yshift=-1cm, color2, font=\small] {$dist = 0.0155$};
+
+\node [right=0.5cm of adv3, rectangle, inner sep=0.5pt, color2, draw, thick] (adv4) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Floral_Button-Front_Dress/img_00000037.jpg}};
+\node [above=of adv4, yshift=-1cm, color2, font=\small] {$dist = 0.0157$};
+
+\end{tikzpicture}

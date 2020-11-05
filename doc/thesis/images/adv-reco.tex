@@ -1,0 +1,20 @@
+\begin{tikzpicture}
+
+\node [rectangle, inner sep=0.5pt, color1, draw, thick] (query1) {\includegraphics[width=2.25cm] {../../data/DeepFashion/img_resized/Striped_Textured_Sweater/img_00000024.jpg}};
+\node [above=of query1, yshift=-1cm, color1, font=\small] {\textbf{Query} image};
+
+
+\node [right=of query1, rectangle, inner sep=0.5pt, color2, draw, thick] (orig1) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Flat_Collar_Woven_Blouse/img_00000034.jpg}};
+\node [above=of orig1, yshift=-1cm, color2, font=\small] {$dist = 0.0306$};
+
+\node [right=0.5cm of orig1, rectangle, inner sep=0.5pt, color2, draw, thick] (orig2) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Nautical_Stripe_Jersey_Tee/img_00000018.jpg}};
+\node [above=of orig2, yshift=-1cm, color2, font=\small] {$dist = 0.0350$};
+
+\node [right=0.5cm of orig2, rectangle, inner sep=0.5pt, color2, draw, thick] (orig3) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Classic_Striped_Top/img_00000032.jpg}};
+\node [above=of orig3, yshift=-1cm, color2, font=\small] {$dist = 0.0434$};
+
+\node [right=0.5cm of orig3, rectangle, inner sep=0.5pt, color2, draw, thick] (orig4) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Boxy_Stripe_Sweater/img_00000029.jpg}};
+\node [above=of orig4, yshift=-1cm, color2, font=\small] {$dist = 0.0446$};
+
+
+\end{tikzpicture}

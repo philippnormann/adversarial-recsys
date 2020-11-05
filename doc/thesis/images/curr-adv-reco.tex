@@ -1,0 +1,20 @@
+\begin{tikzpicture}
+
+\node [rectangle, inner sep=0.5pt, color1, draw, thick] (query1) {\includegraphics[width=2.25cm] {../../data/DeepFashion/img_resized/Striped_Textured_Sweater/img_00000024.jpg}};
+\node [above=of query1, yshift=-1cm, color1, font=\small] {\textbf{Query} image};
+
+
+\node [right=of query1, rectangle, inner sep=0.5pt, color3, draw, thick] (orig1) {\includegraphics[width=2cm] {../thesis/images/adv/curriculum-adversarial-8-k/cw/0.2/attack}};
+\node [above=of orig1, yshift=-1cm, color2, font=\small] {$dist = 0.0683$};
+
+\node [right=0.5cm of orig1, rectangle, inner sep=0.5pt, color2, draw, thick] (orig2) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Striped_Boat_neck_Tee/img_00000088.jpg}};
+\node [above=of orig2, yshift=-1cm, color2, font=\small] {$dist = 0.1217$};
+
+\node [right=0.5cm of orig2, rectangle, inner sep=0.5pt, color2, draw, thick] (orig3) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Boxy_Texture-Striped_Tee/img_00000030.jpg}};
+\node [above=of orig3, yshift=-1cm, color2, font=\small] {$dist = 0.1227$};
+
+\node [right=0.5cm of orig3, rectangle, inner sep=0.5pt, color2, draw, thick] (orig4) {\includegraphics[width=2cm] {../../data/DeepFashion/img_resized/Split-Neck_Dolman_Blouse/img_00000043.jpg}};
+\node [above=of orig4, yshift=-1cm, color2, font=\small] {$dist = 0.1257$};
+
+
+\end{tikzpicture}

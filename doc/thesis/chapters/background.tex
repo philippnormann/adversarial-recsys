@@ -1,0 +1,550 @@
+\chapter{Background}
+\label{chp:background}
+This chapter provides an overview of the theoretical prerequisites on \ac{ML}, \ac{RS} and the field of adversarial examples that were required for solving the main task of this thesis.
+
+\section{Supervised Learning}
+\label{sec:supervised}
+The majority of problems from the field of \ac{ML} require a parameterized algorithm $f_\theta$ to perform a mapping $f_\theta: X \to Y $, where $ X $ is the input space and $Y$ the output space. For example, in visual recognition, $ X $ might be the space of images, while $ Y $ could be the interval $[0,1]$ describing the probability of a dog appearing in it. Since it is often not trivial to manually specify this function $f$ by traditional means, the supervised learning paradigm offers an alternate approach, which takes advantage of the fact that in many cases, it is relatively easy to acquire a dataset containing examples of the desired mapping. Using these observations, it is possible to train a parametric model, approximating function $f$ iteratively. After successful training, this approximated function can then predict values of $Y$ for unobserved inputs of \(X\)~\parencite{Karpathy:2016}.
+
+In order to find an acceptable approximation, we need an objective function for measuring the disagreement between a model's prediction $\hat{y} = f_\theta(x)$ and the ground truth $y$, i.e., $\mathcal{L}(\hat{y},y) \rightarrow \mathbb{R}$. Such a function is usually known as the \textit{loss} or \textit{error} function and is the primary quality measure used while training a model. A widely used loss function for regression problems is the \ac{MSE}:
+\begin{equation}
+\mathcal{L}_{MSE}(\hat{y}, y)=\frac{1}{n}\sum_{i=1}^n(\hat{y}_i-y_i)^2\;,
+\end{equation}
+while in classification tasks, the \ac{CE} loss function is more commonly used and measures the disagreement between two probability distributions, $y$ and $\hat{y}$:
+\begin{equation}
+\mathcal{L}_{CE}(\hat{y}, y)=-\sum_{k=1}^K(y_k \log \hat{y}_k) = -\log \hat{y}_{y=1}\;.
+\end{equation}
+Minimizing the task-specific loss function becomes the main objective of the supervised learning task. Usually, a subset of the collected observation is held out for evaluating the model's performance on unseen data. The achieved predictive quality on this test set after training is an indicator of the generalizability of the approximated model $f_\theta$.
+\section{Image Classification}
+A particularly common supervised learning task is image classification, also known as object recognition. For these types of problems, inputs have the form of 2D pixel intensity matrices in the case of grayscale images and 3D matrices containing separate channel intensities in the case of color images. The channels usually account for the red, green, and blue components of the RGB color space. The outputs are vectors of predicted class probabilities for the given input image, and the goal of the model is to achieve the highest possible accuracy on the test set of unseen images.
+
+Over the years, the research community has established multiple benchmark datasets and competitions for this domain. Beginning with the relatively simple task of handwritten digit recognition, also known as the \ac{MNIST} dataset \parencite{lecun2010mnist}, as seen in Figure~\ref{fig:mnist}, and evolving into more realistic and complex scenarios like the ImageNet challenge \parencite{russakovsky2015imagenet}, also known as the \ac{ILSVRC}, as seen in Figure~\ref{fig:lscrv}, where the dataset contains over 14 million images from over 20,000 classes.
+\begin{figure}[H]
+	\centering
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/0-0}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/1-0}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/2-0}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/3-0}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/4-0}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/5-0}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/6-0}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/7-0}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/8-0}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/9-0}
+	}\\
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/0-1}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/1-1}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/2-1}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/3-1}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/4-1}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/5-1}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/6-1}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/7-1}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/8-1}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/9-1}
+	}\\
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/0-2}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/1-2}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/2-2}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/3-2}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/4-2}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/5-2}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/6-2}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/7-2}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/8-2}
+	}
+	\subfloat{
+		\includegraphics[width=0.075\textwidth]{images/mnist/9-2}
+	}
+	\caption{Randomly sampled images of each class from the \ac{MNIST} digit datset.}
+	\label{fig:mnist}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\subfloat[][snail]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/snail}
+	}
+	\subfloat[][bridge]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/bridge}
+	}
+	\subfloat[][gazania]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/gazania}
+	}
+	\subfloat[][meerkat]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/meerkat}
+	}
+	\subfloat[][bok choy]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/bok-choy}
+	}\\
+	\subfloat[][lobster]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/lobster}
+	}
+	\subfloat[][basenji]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/basenji}
+	}
+	\subfloat[][gorilla]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/gorilla}
+	}
+	\subfloat[][shark]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/shark}
+	}
+	\subfloat[][piano]{
+		\includegraphics[height=0.15\textwidth]{images/imagenet/piano}
+	}
+	\caption{Randomly sampled images from the ImageNet challenge.}
+	\label{fig:lscrv}
+\end{figure}
+\section{Optimization}
+\label{sec:optimization}
+In Section~\ref{sec:supervised}, we introduced the concept of a loss function $\mathcal{L}$, which measures the performance of a prediction. In order to optimize a parameterized model $f_\theta$, we also need an algorithm that can derive a parameter update aimed at minimizing this loss function.
+
+The problem of general optimization is given a function $f: X \to  Y$ to find values $\hat{x}$ that minimizes $f$, i.e., $\hat{x} = \arg \min f(x)$.
+To optimize a differentiable function $f$, one commonly used method is called \textit{gradient descent}. Starting at a randomly initialized value for $\hat{x}$, gradients $\frac{\partial f}{\partial \hat{x}}$ are calculated to iteratively adjust the parameters $\hat{x}$ towards the negative direction of the gradients. The gradient is a vector of partial derivatives, representing the slope of the function along each dimension of the parameter space, i.e. given $f(x_1,...,x_n)$ the gradient is defined as $\nabla f = \left(\frac{\partial f}{\partial x_1}, ..., \frac{\partial f}{\partial x_n} \right)^T$. In cases where analytically solving an optimization problem is computationally infeasible, \textit{gradient descent} can be used to iteratively minimize a differentiable function as seen in Figure~\ref{fig:gd}. In the case of optimizing parameterized models using a loss function $\mathcal{L}$, as presented in Section~\ref{sec:supervised}, we calculate the gradients of our loss function in respect to the parameters of the model $\nabla_\theta \mathcal{L}(f_\theta(x_i), y_i)$ and use gradient descent to iterativly optimize our model.
+\begin{figure}[H]
+	\centering
+	\input{images/gradient-descent}
+	\caption{Visualization of the \textit{gradient descent} algorithm where steps are taken following the direction of the slope (negative gradient) at each iteration. Here $x_0$ to $x_5$ represent data points on the contour plot of a loss function whose minimum is at the red dot in the center.}
+	\label{fig:gd}
+\end{figure}
+In practice, datasets can be very extensive, containing millions of training examples. This circumstance makes the exact calculation of gradients across the whole training data, computationally infeasible. Therefore, the gradients are usually estimated using small batches of examples, resulting in a larger amount of approximate parameter updates, instead of fewer exact ones. This method speeds up training and has proven to work well in most practical use cases \parencite{shamir2013stochastic}. Algorithm~\ref{alg:sgd} depicts the individual steps of this procedure.  The described algorithm is called \ac{SGD} and is the basis for most optimizers used for training \acp{DNN}. 
+\begin{algorithm}[H]
+	\caption{Stochastic Gradient descent (SGD)}
+	\label{alg:sgd}
+	\begin{algorithmic}[1]
+		\Require Training data $\mathcal{D}$;  Learning rate $\eta$;
+		\State $\theta \gets$ random parameter initialization
+		\Repeat
+		\State $(x_i,y_i) \gets$ sample batch from training data $\mathcal{D}$
+		\State $\theta \gets \theta - \eta \sum_i \nabla_\theta \mathcal{L}(f_\theta(x_i), y_i)$ \label{alg:sgd:update}
+		\Until{convergence}
+	\end{algorithmic}
+\end{algorithm}
+The step size, also known as the learning rate, is a critical parameter for the algorithm. If it is too large, the \ac{SGD} will overshoot local minima, since the slope of the function is constantly changing. Vice versa, if it is too small, a minimum will be found reliably, but the convergence is slow since recalculating the gradients for each step is time-consuming. More advanced variants of \ac{SGD} like AdaGrad~\parencite{Duchi:2011}, Adam~\parencite{Kingma:2014} or RMSProp~\parencite{Hinton:2012} are used in practice to speed up convergence. They achieve this by taking into account previous gradients and momentum while computing the updates for an optimization step (Algorithm~\ref{alg:sgd},~Line~\ref{alg:sgd:update}).
+\section{Artificial Neural Networks}
+The previous sections described how a parametric model $f_\theta$, consisting of differentiable functions, can be used to transform the inputs $x_i$ to predicted outputs $\hat{y}_i = f_\theta(x_i)$ and how the parameters of such a model can be iteratively optimized using the \ac{SGD} algorithm. This section further details the definition of this function $f_\theta$ for traditional feedforward networks and \acp{CNN}, a particular type of \ac{ANN}, which is especially useful for image processing tasks.
+\subsection{Feedforward Neural Network}
+\label{sec:feedforward}
+A feedforward network is characterized by its unidirectional dataflow, meaning that the graph representing the network contains no cyclic connections. Data enters at the inputs and is transformed through the network layers by repeating matrix multiplications and element-wise non-linearities until reaching the output. Feedforward neural networks usually consist of multiple layers, as seen in Figure~\ref{fig:feedforward}. These layers are made up of computational units that fully connect to their next layer's units. In the context of \acp{ANN} the output of a single hidden neuron or computational unit is referred to as its activation. These activations, as seen in Figure~\ref{fig:neuron}, are calculated using a biased weighted sum of their inputs $x_i$ and apply a nonlinear activation function $\varphi$ to the result, i.e.
+\begin{equation}
+\hat{y} = f_w(x) = \varphi\left(\sum\limits_{i=0}^{n} x_i w_i + b_i\right)
+\label{eq:neuron}
+\end{equation}
+\begin{figure}[H]
+	\centering
+	\subfloat[][Visualization of an artifical hidden neuron, computing the result of Eqution~\ref{eq:neuron}.]{
+		\resizebox{0.45\textwidth}{!}{\input{images/perceptron}}
+	}
+	\hfill
+	\subfloat[][Plots of the three most common nonlinear activation functions used in \acp{ANN}.]{
+		\resizebox{0.45\textwidth}{!}{\input{images/activations}}
+	}
+	\caption{The anatomy of an artificial hidden neuron}
+	\label{fig:neuron}
+\end{figure}
+\cite{Hornik:1989} first demonstrated that feedforward networks with a sufficiently large amount of hidden units can be considered universal function approximators. Since then, researchers have applied these types of \acp{ANN} successfully to a wide range of real-world tasks, such as \ac{OCR}~\parencite{LeCun:1989} and speech recognition~\parencite{Morgan:1990}. Invented in the 1980s, they are the oldest types of neural networks and have been the basis for more complex architectures such as \acp{CNN} and \acp{RNN}.
+\begin{figure}[H]
+	\centering
+	\input{images/feed-forward}
+	\caption{Graph for a multilayer \ac{ANN}, containing three hidden layers. All nodes of each layer are fully connected to the next layer.}
+	\label{fig:feedforward}
+\end{figure}
+\subsection{Convolutional Neural Networks}
+Convolutional neural networks (\acp{CNN}), also known as ConvNets, first introduced by \cite{LeCun:1989}, are a specialized kind of neural network for processing data with a known grid-like spatial topology (e.g., images, videos, sound spectrograms, character sequences or 3D voxel data). In each of these cases, an input example  $x$ is a multi-dimensional array (tensor). E.g. a $256\times256$ color image is a $256\times256\times3$ tensor (for 3 color channels red, green, blue).  In many of these cases, the input dimensionality is high (e.g., the image above will have approximately 200,000 numbers), and it is therefore infeasible (in both the number of parameters and processing time) to use fully-connected layers as we saw in Section \ref{sec:feedforward}. In these cases, we prefer to design neural network architectures that take advantage of the spatial input topology by using specific local connectivities and reasonable parameter sharing schemes.
+
+The convolutional operation,  the core computational building block  that gave \acp{CNN} their name, provides a solution to this problem. A convolution is a specialized kind of linear operation, and \acp{CNN} are neural networks that use convolution in place of general matrix multiplication in at least one of their layers \parencite{Goodfellow:2016}.
+
+ConvNets are a sequence of layers, and every layer of a ConvNet transforms one volume of activations to another through a differentiable function. We use three main types of layers to build ConvNet architectures -- convolutional, pooling, and fully connected, as already seen in traditional feedforward networks from Section \ref{sec:feedforward}. We will stack these layer types to form a full ConvNet architecture. In the following sections, we will take a closer look at these unique layer types and their modes of operation.
+\subsubsection{Convolutional Layer}
+In the general case, a discrete convolution operation implements the function:
+\begin{equation}
+s(i)=\sum_{a=-\inf}^{\inf}x(a)k(i-a)
+\label{eq:conv1}
+\end{equation}
+where $x$ is the input and $k$ a weighting function known as a kernel. In the case of image processing \acp{CNN}, the input $I$, as well as the kernels $K$, also known as filters, are typically two-dimensional so that we can write out  the convolution function with both axes $(i,j)$ as \parencite{stanford2020cs231n}:
+\begin{equation}
+S(i,j)=\sum_{m}\sum_{n}I(m,n)K(i-m,j-n)
+\label{eq:conv2}
+\end{equation}
+The convolutional layer’s learnable parameters consist of a set of filters. During the forward pass, we slide (more precisely, convolve) each filter across the width and height of the input volume and compute dot products between the entries of the filter and the input at any position. As we slide the filter over the width and height of the input volume, we will produce a 2-dimensional activation map that gives the responses of that filter at every spatial position. We can visualize this procedure, as seen in Figure \ref{fig:conv}.
+\begin{figure}[H]
+	\centering
+	\resizebox{0.6\textwidth}{!}{\input{images/convolution}}
+	\caption{A diagram expressing a two-dimensional convolutional operator as an operation of sliding the kernel matrix $K$ across the target image $I$ and recording elementwise products.}
+	\label{fig:conv}
+\end{figure}
+\subsubsection{Pooling Layer}
+To further control the computational complexity and achieve invariance to small translations of the input, it is common practice to use pooling layers to decrease the representation with a fixed downsampling transformation (i.e., without any learnable parameters). In particular, the pooling layers operate on each activation map independently and downsample them spatially \parencite{Karpathy:2016}.  Two commonly used pooling operations are mean-pooling and max-pooling. The mean-pooling operation is defined as:
+\begin{equation}
+\frac{1}{|u||v|}\sum_{i\in u}\sum_{j\in v}I(i,j)
+\label{eq:meanpooling}
+\end{equation}
+while the max-pooling operation is defined as:
+\begin{equation}
+\max_{i\in u, j \in v} I(i, j).
+\label{eq:maxpooling}
+\end{equation}
+In both cases, $u$, $v$ are vectors of kernel indices and a visual representation of both pooling operations is provided in Figure \ref{fig:pooling}.
+\begin{figure}[H]
+	\centering
+	\subfloat[][Visualization of the \textit{mean pooling} operation. Color coded patches are combined via arithmetic average.]{
+		\resizebox{0.45\textwidth}{!}{\input{images/max-pooling}}
+	}
+	\hfill
+	\subfloat[][Visualization of the \textit{max pooling} operation. Color coded patches are downsampled by taking the maximum value found in the patch.]{
+		\resizebox{0.45\textwidth}{!}{\input{images/mean-pooling}}
+	}
+	\caption{Common pooling operations used in \acp{CNN}.}
+	\label{fig:pooling}
+\end{figure}
+
+\subsubsection{ConvNet Architectures}
+We have seen that \acp{CNN} are commonly made up of only three layer types: convolutional (\texttt{CONV}), pooling (\texttt{POOL}), and fully-connected (\texttt{FC}). We will also explicitly write the activation function as a layer (e.g., \texttt{RELU}), which applies an elementwise non-linearity. In this section, we discuss how these layers are commonly stacked together to form entire ConvNets and which architectures have achieved state-of-the-art performance on the ImageNet challenge.
+
+The most common form of a ConvNet architecture stacks a few \texttt{CONV-RELU} layers, follows them with \texttt{POOL} layers and repeats this pattern until the image has been merged spatially to a small size. At some point, it is common to transition to fully-connected layers. The last fully-connected layer holds the output, such as the class scores. In other words, the most common ConvNet architecture follows the pattern:
+
+\texttt{INPUT -> [[CONV -> RELU]*N -> POOL?]*M -> [FC -> RELU]*K -> FC}
+
+where the \texttt{*} indicates repetition, and the \texttt{POOL?} indicates an optional pooling layer. Additionally, \texttt{N >= 0} (and usually \texttt{N <= 3}), \texttt{M >= 0}, \texttt{K >= 0} (and usually \texttt{K < 3}). 
+
+\acp{CNN} have been successfully applied to image classification tasks. They were first used by \cite{LeCun:1989} to recognize digits from the MNIST dataset and were then widely popularized when \cite{krizhevsky2012imagenet} won the \ac{ILSVRC} 2012 by a large margin with their \ac{CNN} architecture known as AlexNet. Subsequent editions of the challenge were also won by \acp{CNN} like GoogLeNet \parencite{szegedy2015going} or ResNet \parencite{he2016deep}. 
+
+The runner-up in \ac{ILSVRC} 2014 was the network from \cite{simonyan2014very} that became known as VGGNet. Its main contribution was in showing that the depth of the network is critical for good performance. Their final best network, known as VGG-16, visualized in \ref{fig:vgg}, contains 16 \texttt{CONV/FC} layers and features an extremely homogeneous architecture that only performs $3\times3$ convolutions and $2\times2$ pooling from the beginning to the end \parencite{stanford2020cs231n}. 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/vgg16}
+	\caption{Diagram of the  \ac{CNN} architecture of VGG-16}
+	\label{fig:vgg}
+\end{figure}
+
+\section{Backpropagation}
+\label{sec:backprop}
+The generic approach of applying \ac{SGD} to compositional models, such as \acp{ANN}, is called backpropagation. Due to the composite form, we can calculate the gradients using the chain rule for differentiation~\parencite[p.~395]{Hastie:2009}.  For a better intuition as to why this is possible, we can look at the functions that the \ac{ANN} in Figure~\ref{fig:backprop} consists of: 
+\begin{align}	
+h_i&=\varphi\left(\sum\limits_{j=0}^{n} x_j  w_{h_i}^{x_j}\right)\;, \\
+\hat{y}&=\sum\limits_{i=0}^{m}h_i w_{\hat{y}}^{h_i}\;, 
+\end{align}
+where $\varphi$ is a differentiable activation function, $n$ represents the number of inputs, $m$ equals the number of hidden neurons, $x_j$ refers to the inputs and $w_x^y$ are the weights in neuron $x$ for input $y$.
+
+The partial derivative of the loss function $\mathcal{L}$, with respect to a weight $w_{h_i}^{x_j}$ in a hidden neuron $h_i$ for input $x_j$, results from applying the chain rule
+\begin{equation}
+\frac{\partial \mathcal{L}}{\partial w_{h_i}^{x_j}} = \frac{\partial \mathcal{L}}{\partial \hat{y}} \frac{\partial \hat{y}}{\partial \mbox{h}_{i}} \frac{\partial \mbox{h}_{i}}{\partial w_{h_i}^{x_j}}\;.
+\end{equation}
+The resulting value indicates, in which direction the respective weight $w_{h_i}^{x_j}$ has to be adjusted by an infinitesimally small amount, in order to decrease the loss $\mathcal{L}$~\parencite[p.~169]{Rojas:2013}. For simplicity reasons, the bias of each neuron is omitted.
+
+\begin{figure}
+	\centering
+	\input{images/backprop}
+	\caption{Backpropagation in a single hidden layer \ac{ANN}. After a set of inputs is processed in the forward pass (green), the final error is determined and the gradients (contribution of neurons to error) are calculated recursively using the chain rule in the backward pass (red).}
+	\label{fig:backprop}
+\end{figure}
+
+
+\subsection{Numerical Example} 
+In order to further illustrate the process of backpropagation, a complete forward and partial backward pass of the \ac{ANN} in Figure~\ref{fig:backprop} is conducted.
+
+Using a \ac{ReLU} as an activation function:
+\begin{equation}
+\varphi(x) = max(0,x)
+\end{equation}
+
+\textbf{Note.} \ac{ReLU} is technically not differentiable at $x=0$, but is still widely used, due to its empirical performance. It is common practice to set the derivative at this discontinuity to zero or one~\parencite[p.~4]{Nair:2010}.
+
+Given inputs $x_i$ and a label $y$:
+\begin{align}
+x_0 &= 0 & x_1 &= 1 & x_2 &= 0 & y &= 1
+\end{align}
+
+Weights for all hidden and output neurons:
+\begin{align}
+w_{h_0}^{x_0} &= 0.0 & w_{h_0}^{x_1} &= 0.1 & w_{h_0}^{x_2} &= 0.2 \\
+w_{h_1}^{x_0} &= 0.2 & w_{h_1}^{x_1} &= 0.4 & w_{h_1}^{x_2} &= 0.6 \notag\\
+w_{\hat{y}}^{h_0} &= 0.3& w_{\hat{y}}^{h_1} &= 0.2 \notag
+\end{align}
+
+Activation of the first hidden neuron $h_0$:
+\begin{align}
+h_0 &=\varphi(x_0 w_{h_0}^{x_0} + x_1 w_{h_0}^{x_1} + x_2 w_{h_0}^{x_2})\\
+&= \max(0,\,0\cdot0.0+1\cdot0.1+0\cdot0.2) \notag\\
+&= 0.1 \notag
+\end{align}
+
+Activation of the second hidden neuron $h_1$:
+\begin{align}
+h_1 &= \varphi(x_0 w_{h_1}^{x_0} + x_1 w_{h_1}^{x_1} + x_2 w_{h_1}^{x_2})\\
+&= \max(0,\,0\cdot0.2+1\cdot0.4+0\cdot0.6) \notag\\
+&= 0.4 \notag
+\end{align}
+
+Activation of the output neuron $\hat{y}$:
+\begin{align}
+\hat{y} &= h_0 w_{\hat{y}}^{h_0} + h_1 w_{\hat{y}}^{h_1} \\
+&= 0.1\cdot0.3 + 0.4\cdot0.2 \notag\\
+&= 0.11 \notag
+\end{align}
+
+The squared error loss $\mathcal{L}$ is calculated with respect to expected label $y$:
+\begin{equation}
+\mathcal{L} = (\hat{y}-y)^2 = (0.11-1)^2 = 0.7921
+\end{equation}
+
+Since $\mathcal{L}$ is a composite function of $\hat{y}$ (which in turn is again a composite function of $h_1$ and $h_0$), the chain rule of differentiation has to be applied, in order to compute the gradients of $\frac{\partial \mathcal{L}}{\partial w_{\hat{y}}^{h_0}}$ and $\frac{\partial \mathcal{L}}{\partial w_{\hat{y}}^{h_1}}$:
+\begin{align}
+\frac{\partial \mathcal{L}}{\partial w_{\hat{y}}^{h_0}} &= \frac{\partial \mathcal{L}}{\partial \hat{y}}\frac{\partial \hat{y}}{\partial w_{\hat{y}}^{h_0}} = 2(\hat{y}-y) \cdot h_0 = -0.178\\
+\frac{\partial \mathcal{L}}{\partial w_{\hat{y}}^{h_1}} &= \frac{\partial \mathcal{L}}{\partial \hat{y}}\frac{\partial \hat{y}}{\partial w_{\hat{y}}^{h_1}} = 2(\hat{y}-y) \cdot h_1 = -0.712
+\end{align}
+
+The resulting gradients indicate the sensitivity of $\mathcal{L}$ for $w_{\hat{y}}^{h_0}$ and $w_{\hat{y}}^{h_1}$.
+In other words how much $\mathcal{L}$ would change if $w_{\hat{y}}^{h_0}$ or $w_{\hat{y}}^{h_1}$ were adjusted. For a complete backward pass, the gradients for all weights of $h_1$ and $h_0$ would be calculated, by further chaining the partial derivatives. Assuming the optimizer algorithm is \ac{SGD}, the results would be multiplied by an infinitesimally small $learning\,rate$ and subtracted from the respective weights during an update step, resulting in a slightly lower value of $\mathcal{L}$.
+
+\subsection{Computational Graph}
+It is often more intuitive to think of the functions that make up an \ac{ANN}, as a \ac{DAG}, instead of a linear sequence of operations. Vectors flow along the edges of this graph and nodes perform differentiable transformation on these vectors. Most implementations of backpropagation use some kind of graph representation that keeps track of all nodes and operations inside this graph.
+
+The graph and nodes both implement a \texttt{forward()} and \texttt{backward()} operation. 
+During the \texttt{forward()} pass, the graph calls all nodes' \texttt{forward()} operations in the correct topological order, each time supplying the outputs of the last node as inputs to the next.
+
+The graph's \texttt{backward()} implementation operates in the reverse order, starting with the loss and recursively chaining (multiplying) the nodes' gradients together until the end of the graph is reached.
+\textit{PyTorch}---the deep learning framework used in the context of this thesis---also makes use of such graph representation~\parencite{paszke2019pytorch}.
+\section{Recommendation Systems}
+Recommendation systems (\acp{RS}) are \acp{DSS} which analyze patterns of user behavior to provide them with personalized content recommendations that suit their preference. The main reason for online services to deploy recommendation systems, is to handle the phenomenon of information overload, which many users face in a world of evergrowing options and available content \parencite{bobadilla2013recommender}. 
+
+More formally, \cite{adomavicius2005toward} define the recommendation problem as follows: Let $C$ be the set of all users and let $S$ be the set of all possible items that can be recommended. Let u be a utility function that measures the usefulness of items to the user c, i.e., $u : C \times S \to R$, where $R$ is an ordered set. Then, for each user $c \in C $, we want to choose such items $s' \in S $ that maximizes the user's utility. More formally:
+\begin{equation}
+\forall_{c \in C}, \quad s'_c = \arg\max_{s \in S} u(c, s).
+\end{equation}
+Estimating this utility function, which optimizes a particular performance criterion, is the central part of any \ac{RS}. The utility function for items that a user has not interacted with can be estimated in many different ways using methods from machine learning, approximation theory, and various heuristics. \acp{RS} are usually classified according to their approach to utility estimation \parencite{adomavicius2005toward}, as seen in Figure~\ref{fig:recsys}. 
+\begin{figure}[H]
+	\centering
+	\vspace{1em}
+	\input{images/recommender-systems}
+	\caption{Typical categorization for \acp{RS}.}
+	\label{fig:recsys}
+\end{figure}
+In the following sections, we will review the two main approaches of \ac{CF} and \ac{CBF}, explaining the basic concepts and referencing current state-of-the-art models for both approaches.
+\subsection{Collaborative Filtering}
+Collaborative Filtering (\acs{CF}) is based on how humans have made decisions throughout history: Besides on our own experiences, we also base our decisions on the experiences and knowledge that reach each of us from a relatively large group of acquaintances \parencite{bobadilla2013recommender}. Therefore \ac{CF} approaches make recommendations to each user based on the either explicit (e.g., ratings) or implicit (e.g., views or purchases) feedback of users who have the most in common with them, as visualized in Figure~\ref{fig:cf}.
+\begin{figure}[H]
+	\centering
+	\input{images/collaborative-filtering}
+	\caption{Visualization of the collaborative filtering technique}
+	\label{fig:cf}
+\end{figure}
+
+Among the various collaborative filtering techniques, \ac{MF} \parencite{he2016fast} is the most popular one. This approach projects users and items into a shared latent space, using a  vector of latent features to represent a user or an item. After that, users' interaction on an item is modeled as the inner product of their latent vectors. Popularized by the Netflix Prize, MF has become the defacto standard approach to latent factor model-based recommendation \parencite{he2017neural}. Recently an increasing number of researchers have shown interest in employing \acp{DNN} for \ac{CF} \acp{RS}. Prominent examples from this direction of research include the Wide \& Deep model from Google \parencite{cheng2016wide}, the \ac{NCF} approach published by \cite{he2017neural} and the DeepFM model by \cite{guo2017deepfm}.
+
+\subsection{Content-Based Filtering}
+Content-based filtering (\acs{CBF}) generates recommendations using the content from items intended for the recommendation; therefore, specific content needs to be analyzed, like text, images, or sound. A similarity measure between objects can be established from this analysis serving as the basis for recommending items similar to items that a user has bought, visited, heard, viewed, or ranked positively \parencite{bobadilla2013recommender}. This general approach is visualized in Figure~\ref{fig:cbf}. 
+\begin{figure}[H]
+	\centering
+	\input{images/content-based}
+	\caption{Visualization of the content-based filtering technique}
+	\label{fig:cbf}
+\end{figure}
+For a \ac{CBF} system to operate, attributes of the items intended for recommendation must be extracted \parencite{bobadilla2013recommender}. Depending on the type of content, the approaches for this extraction step vary:
+
+In the case of processing textual information, classic information retrieval techniques can be used to define such attributes automatically (e.g., term frequency, inverse document frequency, and normalization to page length) \parencite{pazzani2007content}. As recent advances in \ac{NLP} using \acp{DNN} have demonstrated the importance of learning good representations for text \parencite{le2014distributed}, researchers have started to use \acp{DNN} in the context of text-based \acp{RS} \parencite{chen2017joint}, achieving superior results compared to classical methods. 
+\pagebreak
+
+For visual \acp{RS}, early attempts have primarily employed annotated tags \parencite{fan2008justclick} or low-level visual features \parencite{su2010efficient}, such as color, texture, and shape, to capture the semantics of images. As a result of the success of \acp{DNN} in the domain of computer vision \parencite{he2016deep}, many recent approaches, like \cite{mcauley2015image}, \cite{he2016vbpr}, \cite{bracher2016fashion}, \cite{kang2017visually}, \cite{shankar2017deep}, and \cite{tuinhof2018image} have now also shifted towards using \acp{DNN} for image-based \acp{RS}. More specifically, they utilize \acp{CNN} as feature extractors for images and integrate these product features into purely content-based or hybrid \acp{RS}.
+
+\section{Adversarial Attacks}
+Statistical \ac{ML} and especially, \ac{DL} have become increasingly popular due to their superior performance in many tasks and are deployed in many real-world applications, ranging from image classification~\parencite{krizhevsky2012imagenet, he2016deep} to speech recognition~\parencite{hinton2012deep} and \ac{NLP}~\parencite{devlin2018bert}. Because of these accomplishments, \ac{ML} methods have also become an essential tool in many security-sensitive domains, such as spam filtering~\parencite{guzella2009review}, malware detection~\parencite{sahs2012machine}, and network \acp{IDS}~\parencite{yin2017deep}, where these applications are required to be highly accurate, stable, and reliable, even if underlying data distributions change. These requirements stand in contrast to an attacker's goals, who tries to modify the input data to circumvent these systems. \cite{dalvi2004adversarial} has first demonstrated that machine learning models are often vulnerable to manipulations, causing incorrect classification of adversarial inputs. In particular, neural networks are highly vulnerable to attacks based on small modifications to inputs at prediction time, as first pointed out by \cite{szegedy2013intriguing}. More recent research by \cite{grosse2016adversarial} has also proven the existence of adversarial examples for the problem of malware classification. Apart from the security implications, this phenomenon also demonstrates that current models are not learning the underlying concepts in a robust manner \parencite{madry2017towards}. The following sections will give a definition of adversarial examples, explore different attack methods, discuss the property of transferability and lastly, show what kind of defenses exist.
+\subsection{Adversarial Examples}
+An adversarial example is a sample of input data that has been modified very slightly in a way that intends to cause a machine learning classifier to misclassify it. In many cases, these modifications can be so subtle that a human observer does not even notice the modification at all, as seen in Figure \ref{fig:adv}, yet the classifier still makes a mistake \parencite{kurakin2016adversarial}.
+
+Currently there is no widely agreed-upon explanation as to why these adversarial examples exist, but rather a variety of explanations were proposed. Some researchers have attributed this phenomenon to the high dimensional nature of the input and parameter space \parencite{goodfellow2014explaining}, while others have attributed it to the presence of non-robust features in the training data \parencite{ilyas2019adversarial}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/piggie}
+	\caption{On the left, we have an image of a pig that is correctly classified as such by a state-of-the-art \ac{CNN}. After perturbing the image slightly (every pixel is in the range [0, 1] and changed by at most 0.005), the network now returns class “airliner” with high confidence \parencite{mit2018adv}.}
+	\label{fig:adv}
+\end{figure}
+More formally \cite{carlini2017towards} defines a targeted adversarial example $x'$ as an example fulfilling the property of $C(x') = t$, where $C$ is a classifier, $x$ an input, $y$ the ground-truth class label and $t\ne y$ the target class, while $x'$ and $x$ are close according to some distance metric. 
+
+A less powerful attack also discussed in the literature instead asks for untargeted adversarial examples:  instead of classifying $x$ as a given target class, we only search for an input $x'$ so that
+$C(x')\ne y$ and $x,x'$ are close \parencite{carlini2017towards}.
+
+There  are three widely-used distance metrics in the literature for generating adversarial examples, all of which are $l_p$ norms \parencite{carlini2017towards}.
+
+\begin{enumerate}
+	\item $l_0$ distance measures the number of coordinates $i$ such that $x_i \ne x_i' $.
+	\item $l_2$ distance measures the standard Euclidean distance between $x$ and $x'$. 
+	\item $l_\infty$ distance measures the maximum change to any of the coordinates:
+	\begin{equation}
+		\|x-x'\|_\infty = \max(|x_1-x'_1|,...,|x_n-x'_n|).
+	\end{equation}
+\end{enumerate}
+
+\subsection{Finding Adversarial Examples}
+The following sections will describe three well-studied white-box attacks and show how they can be used to find targeted adversarial examples. All approaches share a common theme of using the gradients $\nabla_x$ produced by the network with respect to the input for finding adversarial perturbations that optimize for a chosen adversarial goal.
+
+\subsubsection{Fast Gradient Sign Method}
+One of the first and most popular adversarial white-box attacks is the single-step \ac{FGSM}, initially described by \cite{goodfellow2014explaining}. Let $x$ be the input to the model, $y$ the label associated with $x$ and $\mathcal{L}(x, y)$ be the loss used to train the model. We can linearize the loss function around the current value of $x$, obtaining an $\epsilon$ constrained perturbation which can be added to the image to obtain an untargeted adversarial example $x'$ that maximizes $\mathcal{L}$, i.e.
+\begin{equation}
+x' = x + \epsilon\ \text{sign}(\nabla_x\mathcal{L}(x, y)).
+\label{eq:fgsm-untargeted}
+\end{equation}
+In other words, the attack backpropagates the gradient back to the input data to calculate $\nabla_x\mathcal{L}(x, y)$ and then adjusts the input data by a small step $\epsilon$ in the direction that will maximize the loss. 
+
+To use \ac{FGSM} for targeted attacks, trying to maximize the probability for some specific class $t \ne y$, attacking a neural network with \ac{CE} loss will lead to the following formula for the single-step attack \cite{kurakin2016scale}:
+\begin{equation}
+x' = x - \epsilon\ \text{sign}(\nabla_x\mathcal{L}(x, t)).
+\label{eq:fgsm-targeted}
+\end{equation}
+
+\subsubsection{Projected Gradient Descent}
+A rather simple extension of the original \ac{FGSM} attack is the \ac{PGD} attack, also known as the \ac{BIM}. By iteratively performing the \ac{FGSM} attack with smaller step sizes $\alpha$ and clipping the resulting perturbations after each iteration, more powerful adversarial examples can be found. More formally a untargeted \ac{PGD} attack can be written as \parencite{kurakin2016adversarial}:
+\begin{equation}
+x'_0 = x,\quad x'_{N+1} = Clip_{x,\epsilon}\Big\{ x'_N + \alpha\ \text{sign}(\nabla_x\mathcal{L}(x'_N, y)) \Big\}.
+\label{eq:pgd-untargeted}
+\end{equation}
+Similar to \ac{FGSM} the targeted version looks very similar:
+\begin{equation}
+x'_0 = x,\quad x'_{N+1} = Clip_{x,\epsilon}\Big\{ x'_N - \alpha\ \text{sign}(\nabla_x\mathcal{L}(x'_N, t)) \Big\}.
+\label{eq:pgd-targeted}
+\end{equation}
+The exact clipping equation, ensuring valid pixel values ($0\le x' \le 1$) and a maximum $l_\infty$-norm perturbation budget $\epsilon$ for an adversarial example $x'$, is defined as:
+\begin{equation}
+Clip_{x,\epsilon} \big\{ x' \big\} = \min \Big\{1, x +\epsilon,\max \big\{ 0,x-\epsilon, x'\big\}, \Big\}
+\label{eq:clip}
+\end{equation}
+where $x$ is the channel values of the original image.
+
+\subsubsection{Carlini \& Wagner Method}
+The \ac{CW} attack \parencite{carlini2017towards} is one of the most effective white-box attack methods. The core idea of the \ac{CW} attack is to use an unconstrained optimization formulation and an emperically chosen objective function $f$. Formally, for a chosen $l_p$ norm, the problem becomes: given a constant $c$, and an input image $x$, find $\delta$ that solves
+\begin{align}
+\minimize \quad& \|\delta\|_p + c \cdot f(x+\delta)\\
+such\,that \quad& x+ \delta \in[0,1]^n
+\label{eq:cw}
+\end{align}
+To ensure the modification yields a valid image ($0\le x_i+\delta_i \le 1$), known  as  a  box constraint, a change of variables for delta is performed:
+\begin{equation}
+\delta_i=\frac{1}{2}(\tanh(w_i) + 1) - x_i.
+\label{eq:tanh-trick}
+\end{equation}
+Since $-1 \le \tanh(w_i) \le 1$, it follows that $0 \le x_i+\delta_i\le 1$, so the solution will automatically be valid. This method enables us to use other optimization algorithms that do not natively support box constraints. \cite{carlini2017towards} reported that in their experiments, the Adam \parencite{Kingma:2014} optimizer was the most effective at quickly finding adversarial examples.
+
+Since the $l_\infty$ distance metric is not fully differentiable, \cite{carlini2017towards} found that gradient descent produces very poor results for minimizing the $\|\delta\|_\infty$ term. They instead suggest replacing this term with a penalty for any terms that exceed $\tau$, resulting in the following problem definition for a \ac{CW} optimizing for $l_\infty\le\tau$:
+\begin{equation}
+\minimize_\delta \quad c\cdot f(x+\delta) + \sum_i [(\delta_i-\tau)^+]
+\label{eq:cw-linf}
+\end{equation}
+
+\subsection{Transferability of Adversarial Examples}
+An interesting property of adversarial examples discovered by \cite{szegedy2013intriguing} is their \textit{transferability} (also \textit{generalization}).  An adversarial example created for one model can sometimes serve as an adversarial example for a different model that has been trained from scratch on the same training set (cross model generalization) or even on a completely disjoint training set (cross training set generalization). This property also enables black-box attacks using surrogate models, which were shown to be effective against public vision \acp{API} \parencite{ilyas2018black}.
+
+\subsection{Defending Against Adversarial Examples}
+Since the discovery of adversarial examples, numerous studies have been dedicated to finding effective defenses \parencite{papernot2016distillation, tramer2017ensemble, lin2019defensive}. The class of defenses that have proven to work most reliably \parencite{athalye2018obfuscated} is called \ac{AT} and is also the class of defenses that we will focus on in this Section. Starting with an explanation of traditional \ac{AT} we will also describe a suggested improvement called \ac{CAT}.
+
+\subsubsection{Adversarial Training}
+The basic idea of \ac{AT} is to integrate adversarial examples into the optimization procedure of the neural network to train a robust classifier, which can correctly classify adversarial inputs within a defined $l_p$ norm. This changes the problem of training a model to a min-max problem, where our goal is to perform  well, no matter what attack an adversary uses. That is, given a dataset $\mathcal{D}$, a parameterized model $f_\theta$ and a loss function $\mathcal{L}$, we want to solve the outer minimization problem \parencite{madry2017towards}:
+\begin{equation}
+\minimize_\theta \quad \frac{1}{|\mathcal{D}|}\sum_{x,y\in\mathcal{D}}\max_{\|\delta\|_p\le\epsilon}\mathcal{L}(f_\theta(x+\delta), y).
+\label{eq:adv-training}
+\end{equation}
+
+Solving the inner optimization can be achieved using any of the previously mentioned attacks but is usually conducted using \ac{PGD}, due to its favorable trade-off between time-complexity and performance~\parencite{madry2017towards}. A full description of the \ac{AT} procedure is provided in Algorithm~\ref{alg:adv-train}. Additionally, Figure~\ref{fig:adv-boundary} provides a simplified visualization of the \ac{AT} problem and shows why classifying examples in a robust way requires a stronger classifier due to a more complicated decision boundary.
+
+\begin{figure}[H]
+	\centering
+	\subfloat[][A set of points that can be easily separated with a simple decision boundary.]{
+		\input{images/linear-model}
+	}\hspace{0.5cm}
+	\subfloat[][The simple decision boundary does not separate the $l_\infty$-balls (here, squares) around the data points. Hence there are adversarial examples (the red stars) that will be misclassified.]{
+		\input{images/linear-attack}
+	}\hspace{0.5cm}
+	\subfloat[][Separating the $l_\infty$-balls requires a significantly more complicated decision boundary. The resulting classifier is robust to adversarial examples with bounded $l_\infty$-norm perturbations.]{
+		\input{images/adversarial-decision-boundary}
+	}
+	\caption{A conceptual illustration of standard vs. adversarial decision boundaries (adapted from \cite{madry2017towards})}
+	\label{fig:adv-boundary}
+\end{figure}
+\begin{algorithm}[H]
+	\caption{Adversarial Training (AT($\mathcal{D}, N, \eta, \mathcal{A}$))}
+	\label{alg:adv-train}
+	\begin{algorithmic}[1]
+		\Require Training data $\mathcal{D}$; Total iterations $N$; Learning rate $\eta$;
+		\Require An attack $\mathcal{A}$
+		\State $\theta \gets$ random parameter initialization
+		\For{$i \gets 0$ to $N$}
+			\State $(x_i,y_i) \gets$ sample batch from training data $\mathcal{D}$
+			\State $x'_i \gets$ generate adversarial examples using $\mathcal{A}(x_i, y_i)$
+			\State $\theta \gets$ update parameters using SGD, i.e. $\theta - \eta \sum_i \nabla_\theta \mathcal{L}(f_\theta(x'_i), y_i)$
+		\EndFor
+		\State \Return $\theta$
+	\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Curriculum Adversarial Training}
+A proposed improvement of the traditional \ac{AT} framework published by \cite{cai2018curriculum} is called \acl{CAT}. The main idea behind this approach is that generating a curriculum of adversarial examples with gradually increasing attack strengths $k$, during training can help a model in regards to convergence, leading to higher accuracy results on clean and adversarial inputs. The initial attack strength is set to $k=0$, causing the normal task to be learned first, before starting with the actual adversarial training. The detailed steps of this method are displayed in Algorithm~\ref{alg:curriculum-adv-train}.
+
+\begin{algorithm}[H]
+	\caption{Curriculum Adversarial Training (Basic)}
+	\label{alg:curriculum-adv-train}
+	\begin{algorithmic}[1]
+		\Require Training data $\mathcal{D}$; Validation data $\mathcal{V}$; Learning rate $\eta$; Epoch iterations $n$; Maximum attack strength $K$
+		\Require A class of attack, denoted as $\mathcal{A}(k)$ whose strength is parameterized by $k$
+		\State $\theta \gets$ random parameter initialization
+		\For{$l \gets 0$ to $K$}
+			\Repeat
+				\State $\theta \gets$ AT($\mathcal{D}, n, \eta, \mathcal{A}(l)$)
+			\Until{$\tilde{l}$-accuracy on $\mathcal{V}$ not increased for 10 epochs}
+		\EndFor
+		\State \Return $\theta$
+	\end{algorithmic}
+\end{algorithm}

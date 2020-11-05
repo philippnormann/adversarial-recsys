@@ -1,0 +1,17 @@
+\begin{tikzpicture}[samples=50,smooth]
+	\clip(-4,-1) rectangle (4,4);
+	\path[bend left,name path=arrowcurve] (-2,4) to[out=-30,in=-160] (0,0);
+	\foreach \y[count=\i] in {20,16,12,8,4,1,0.0625}{
+		\pgfmathsetmacro\colper{\y*4} % color percentage variable
+		\draw[name path global/.expanded=curve\i,white!\colper!black] plot[domain=0:360] ({cos(\x)*sqrt(\y/(sin(2*\x)+2))},{sin(\x)*sqrt(\y/(sin(2*\x)+2))});
+		\draw[name intersections = {of ={curve\i} and arrowcurve}](intersection-1) coordinate (P\i);
+		\ifnum\i=1 
+		% do nothing
+		\else%
+		\pgfmathtruncatemacro\imin{\i-1}
+		\pgfmathtruncatemacro\iprint{\i-2}
+		\draw[->, color=color1, thick] (P\imin) -- (P\i) node[above right,midway] {$x_\iprint$}; 
+		\fi%
+	\node {\color{color3}\tiny\faCircle};
+	}
+\end{tikzpicture}

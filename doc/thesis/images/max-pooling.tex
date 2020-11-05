@@ -1,0 +1,33 @@
+\begin{tikzpicture}
+
+\matrix (in) [matrix of nodes,row sep=-\pgflinewidth, nodes={draw}]
+{
+	|[fill=color1!30]| 4 & |[fill=color1!30]| 7 & |[fill=color2!30]| 1 & |[fill=color2!30]|3\\
+	|[fill=color1!30]| 3 & |[fill=color1!30]| 6 & |[fill=color2!30]| 0 & |[fill=color2!30]|8\\
+	|[fill=color3!30]| 9 & |[fill=color3!30]| 2 & |[fill=color5!30]| 6 & |[fill=color5!30]|1\\
+	|[fill=color3!30]| 1 & |[fill=color3!30]| 4 & |[fill=color5!30]| 1 & |[fill=color5!30]|0\\
+};
+
+\node [below=0em of in] (lin) {\tiny Input};
+
+\matrix (out) [matrix of nodes,row sep=-\pgflinewidth, nodes={draw}, right=4em of in]
+{
+	|[fill=color1!30]| 5 & |[fill=color2!30]| 3 \\
+	|[fill=color3!30]| 4 & |[fill=color5!30]| 2 \\
+};
+
+\node [below=0em of out] (lout) {\tiny Output};
+
+\draw[->] (in) to node[above]{\scriptsize Mean} node[below]{\scriptsize Pooling} (out);
+
+\draw[very thick, color1] (in-1-1.north west) rectangle ($(in-2-2.south east) + (0,0.4pt)$);
+\draw[very thick, color2] (in-1-4.north east) rectangle ($(in-2-3.south west) + (0,0.4pt)$);
+\draw[very thick, color3] (in-4-2.south east) rectangle (in-3-1.north west);
+\draw[very thick, color5] (in-4-4.south east) rectangle (in-3-3.north west);
+
+\draw[very thick, color1] (out-1-1.north west) rectangle ($(out-1-1.south east) + (0,0.4pt)$);
+\draw[very thick, color2] (out-1-2.north east) rectangle ($(out-1-2.south west) + (0,0.4pt)$);
+\draw[very thick, color3] (out-2-1.north west) rectangle (out-2-1.south east);
+\draw[very thick, color5] (out-2-2.north west) rectangle (out-2-2.south east);
+
+\end{tikzpicture}

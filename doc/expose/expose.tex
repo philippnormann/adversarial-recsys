@@ -1,0 +1,76 @@
+\documentclass{scrartcl}
+\usepackage[backend=biber,style=alphabetic]{biblatex}
+\usepackage[german]{babel}
+\usepackage{hyperref}
+
+\bibliography{../literature.bib}
+
+\title{Exposé zur Masterarbeit}
+\subtitle{Adversarial Attacks on Recommender Systems}
+
+\author{Philipp Normann (its103541)}
+
+\begin{document}
+	\maketitle
+	
+	\section{Motivation}
+	Als einer der größten deutschen Onlinehändler, setzt auch OTTO (GmbH \& Co KG) verstärkt auf lernende Empfehlungssysteme zur gezielten Kundenansprache. Jedoch sind genau diese lernenden Systeme, welche unsere täglichen Entscheidungen beeinflussen, Bedrohungen von feindlichen Akteuren ausgesetzt.
+	Diese Akteure versuchen durch die gezielte Manipulation der Trainings- oder Inputdaten, die Empfehlungssysteme zu Ihren Gunsten auszunutzen (z.B. zur Promotion ihrer eignen Produkte oder zu Manipulation des öffentlichen Meinungsbildes).
+	Da eine erfolgreiche Kompromittierung solcher Systeme, je nach Anwendungsgebiet, weitreichende Auswirkungen haben kann, ist ein besseres Verständnis möglicher Angriffe und Verteidigungen essentiell. 
+	Die allgemeine Anfälligkeit lernender Systeme für \textit{feindliche Beispiele} ist seit 2013 bekannt \cite{biggio2013evasion,szegedy2014intriguing, goodfellow2014explaining} und hat sich mittlerweile als ein eigenes Forschungsgebiet (\textit{adversarial learning}) etabliert. 
+	Bisherige Arbeiten im Bezug auf Empfehlungssysteme haben sich vor allem damit beschäftigt, Collaborative Filtering Methoden, durch das einschleusen von Fake-Profilen, zu beeinflussen  \cite{o2002promoting, christakopoulou2019adversarial} und diese Fake-Profile durch Methoden der Anomalieerkennung aufzudecken \cite{chirita2005preventing, williams2006profile}.
+	Inwieweit auch Inhaltsbasierten Empfehlungen von gegnerischen Bedrohungen betroffen sind und welche Methoden es dazu gibt, um den Einfluss \textit{feindlicher Beispiele} zu reduzieren, wurde bisher wenig Aufmerksamkeit geschenkt und soll daher im Rahmen dieser Arbeit genauer untersucht werden.
+
+	\section{Zielsetzung}
+	Das Ziel der Arbeit soll es sein, Modelle zur inhaltsbasierten Empfehlungen, auf ihre potenzielle Anfälligkeit gegen populäre Angriffe aus dem Bereich \textit{Adversarial Learning} zu testen und geeignete Verteidigungsmaßnahmen zu implementieren und zu evaluieren.
+	
+	
+	\section{Optionale Zusätze}
+	Falls ich nach der Zielerreichung noch ausreichend Zeit habe, werde ich zusätzlich einen größeren Fokus auf die Methoden des kollaborativen Filterns setzten und dort ebenfalls Angriffe und Verteidigungen für diese Art von Systemen reproduzieren und evaluieren.
+	
+	\section{Herangehensweise}
+		\subsection{Grundlagen}
+		Zuerst sollen die notwendigen theoretischen Grundlagen erarbeitet werden. Dazu gehört eine allgemeine Einführung in die Thematik der \textit{Adverserial Attacks} gegen tiefe Neuronale Netzwerke und eine Aufschlüsselung der Ziele und der verscheidenden Arten von Empfehlungssystemen.
+		\subsection{Bedrohungsanalyse}
+		Bevor mit der Exploration möglicher Angriffe und Verteidigungen begonnen wird, soll jeweils eine strukturierte Bedrohungsanalyse für inhaltsbasierte und kollaborative Empfehlungssysteme vorgenommen werden, um ein besseres Verständnis zur Bedrohungslandschaft und zu schützender Assets zu erlangen. Die hierbei bestimmten Bedrohungen sollen als Grundlage für die Erarbeitung von Angriffen und Verteidigungen dienen. 
+
+		\subsection{Datengrundlage}
+		Als Benchmark für alle folgenden Experimente sollen vorwiegend öffentlich zugängliche Datensätze verwendet werden, um eine Vergleichbarkeit und Reproduzierbarkeit zu gewährleisten. Dazu bietet sich z.B. der \textit{MovieLens} Datensatz von der University of Minnesoata \cite{harper2015movielens} oder der \textit{Netflix} Datensatz \cite{bennett2007netflix} an.
+		\subsection{Angriffe}
+			Es soll eine Auswahl populärer \textit{white-box} und \textit{black-box} Angriffe implementiert und evaluiert werden. Erst für das klassische Problem der Handschrifterkennung (MNIST) \cite{lecun2010mnist} und danach für verbreitete inhaltsbasierte Empfehlungssysteme.
+			
+			Eine Auswahl möglicher Angriffe:
+			\begin{enumerate}
+				\item Projected Gradient Descent (PGD) \cite{kurakin2016adversarial}
+				\item Fast Gradient Sign Method (FGSM) \cite{goodfellow2014explaining}
+				\item Transfer Attacks \cite{papernot2017practical}
+				\item Carlini \& Wagner Attacks (CW) \cite{carlini2017towards}
+				\item …
+			\end{enumerate}
+		
+		\pagebreak
+		\subsection{Verteidigungen}
+			Gegen die entwickelten Angriffe soll ebenfalls nach angemessenen Verteidigungen gesucht werden. Diese sollen dann ebenfalls zuerst auf MNIST und danach auf inhaltsbasierte Empfehlungssysteme angewandt und evaluiert werden.
+			
+
+			Eine Auswahl möglicher Verteidigungen:
+			\begin{enumerate}
+				\item Adversarial Training \cite{tramer2017ensemble}
+				\item Thermometer Encoding \cite{buckman2018thermometer}
+				\item …
+			\end{enumerate}
+		
+		\subsection{Fazit}
+			Nach der Implementierung und Evaluierung der Angriffe und Verteidigungen, soll ein Fazit bezüglich der Gefährdung von Empfehlungssystemen gezogen werden und ein Ausblick auf zukünftige Forschungsfragen gegeben werden.
+
+	
+	\section{Verwandte Arbeiten}
+	\begin{itemize}
+		\item Adversarial attacks on an oblivious recommender \cite{christakopoulou2019adversarial}
+		\item Adversarial Recommendation:  Attack of the Learned Fake Users \cite{christakopoulou2018adversarial}
+		\item Poisoning attacks to graph-based recommender systems \cite{fang2018poisoning}
+		\item Preventing shilling attacks in online recommender systems \cite{chirita2005preventing}
+	\end{itemize}
+
+	\printbibliography
+\end{document}

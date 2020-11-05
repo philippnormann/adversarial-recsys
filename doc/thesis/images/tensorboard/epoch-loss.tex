@@ -1,0 +1,25 @@
+\begin{tikzpicture}
+\begin{axis}[
+axis background/.style={fill=color0},
+axis line style={white},
+legend cell align={left},
+legend style={fill opacity=0.8, draw opacity=1, text opacity=1, at={(0.03,0.97)}, anchor=north west, draw=none, fill=color0, font=\scriptsize},
+tick align=outside,
+tick pos=left,
+x grid style={white},
+xmajorgrids,
+xtick style={color=white!15!black},
+scaled y ticks = false, 
+scaled x ticks = false, 
+y grid style={white},
+ymajorgrids,
+ytick style={color=white!15!black},
+ticklabel style = {font=\scriptsize},
+xlabel=$step$, ylabel={$loss$}
+]
+\addplot [ultra thick, color1, smooth] table [x=Step, y=Value, col sep=comma] {images/tensorboard/loss-train.csv};
+\addlegendentry{train}
+\addplot [ultra thick, color3, smooth] table [x=Step, y=Value, col sep=comma] {images/tensorboard/loss-test.csv};
+\addlegendentry{test}
+\end{axis}
+\end{tikzpicture}
